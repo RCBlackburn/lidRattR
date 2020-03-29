@@ -69,11 +69,14 @@ std_cloud <- function(x, y, z, ReturnNumber)
   d50 = (sum(z <= 50 & z > 45 )/length(z))*100
   d55 = (sum(z > 50 )/length(z))*100
   # canopy related metrics
-  cc_10 = sum(z >= 10 & ReturnNumber == 1)
-  cc_20 = sum(z >= 20 & ReturnNumber == 1)
-  prct_1r_ab_mean = sum(mean(z) >= 20 & ReturnNumber == 1)
-  prct_1r_ab_mode = sum(mode(z) >= 20 & ReturnNumber == 1)
-  prct_ab_1 =
+  prct_10_1r = sum(z >= 10 & ReturnNumber == 1)/ length(z)
+  pcrt_20_1r = sum(z >= 20 & ReturnNumber == 1)/ length(z)
+  prct_1r_ab_mean = sum(mean(z) >= 20 & ReturnNumber == 1)/ length(z)
+  prct_1r_ab_mode = sum(mode(z) >= 20 & ReturnNumber == 1)/ length(z)
+  pcrt_10 = sum(z >= 10)/ length(z)
+  pcrt_20 = sum(z >= 20)/ length(z)
+  prct_ab_mean = sum(mean(z) >= 20)/ length(z)
+  prct_ab_mode = sum(mode(z) >= 20)/ length(z)
   metrics = list(
     npts = npoints,
     npnts_1 = npoints_1,
@@ -125,7 +128,15 @@ std_cloud <- function(x, y, z, ReturnNumber)
     pHt80_m = percentHt80,
     pHt90_m = percentHt90,
     pHt95_m = percentHt95,
-    pHt99_m = percentHt99
+    pHt99_m = percentHt99,
+    prct_10_1r = prct_10_1r,
+    pcrt_20_1r = pcrt_20_1r,
+    prct_1r_ab_mean = prct_1r_ab_mean,
+    prct_1r_ab_mode =  prct_1r_ab_mode,
+    pcrt_10 = pcrt_10,
+    pcrt_20 = pcrt_20,
+    prct_ab_mean = prct_ab_mean,
+    prct_ab_mode = prct_ab_mode
 
   )
 
@@ -193,7 +204,8 @@ std_trees = function(trees)
                  Lskew_tree_crown_area = Lmoments::Lcoefs(crown_area)[3],
                  Lkurt_tree_crown_area = Lmoments::Lcoefs(crown_area)[4]
   )
-
+  null_list <- lapply(metrics,is.null)
+  metrics[do.call(rbind,null_list)] <- NA
   return(as.data.frame(metrics))
 }
 

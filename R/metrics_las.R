@@ -33,12 +33,12 @@ std_cloud <- function(x, y, z, ReturnNumber)
   zskew = e1071::skewness(z)
   zkurt = e1071::kurtosis(z)
   # L moments
-  zL1 = Lmoments::Lmoments(z)[1]
-  zL2 =Lmoments::Lmoments(z)[2]
-  zL3 =Lmoments::Lmoments(z)[3]
-  zL4 =Lmoments::Lmoments(z)[4]
-  zLskew = Lmoments::Lcoefs(z)[3]
-  zLkurt = Lmoments::Lcoefs(z)[4]
+  zL1 = Lmoments::Lmoments(z, na.rm = T)[1]
+  zL2 =Lmoments::Lmoments(z,na.rm = T)[2]
+  zL3 =Lmoments::Lmoments(z, na.rm = T)[3]
+  zL4 =Lmoments::Lmoments(z, na.rm = T)[4]
+  zLskew = Lmoments::Lcoefs(z, na.rm = T)[3]
+  zLkurt = Lmoments::Lcoefs(z, na.rm = T)[4]
   # height percentiles
   percentHt1 = quantile(z, 0.01)
   percentHt5 = quantile(z, 0.05)
@@ -179,12 +179,12 @@ std_trees = function(trees)
                  aad_tree_z = stats::mad(z, center = mean(z)),
                  skew_tree_z = e1071::skewness(z),
                  kurt_tree_z = e1071::kurtosis(z),
-                 L1_tree_z = Lmoments::Lmoments(z)[1],
-                 L2_tree_z =Lmoments::Lmoments(z)[2],
-                 L3_tree_z =Lmoments::Lmoments(z)[3],
-                 L4_tree_z =Lmoments::Lmoments(z)[4],
-                 Lskew_tree_z = Lmoments::Lcoefs(z)[3],
-                 Lkurt_tree_z = Lmoments::Lcoefs(z)[4],
+                 L1_tree_z = Lmoments::Lmoments(z, na.rm = T)[1],
+                 L2_tree_z =Lmoments::Lmoments(z, na.rm = T)[2],
+                 L3_tree_z =Lmoments::Lmoments(z, na.rm = T)[3],
+                 L4_tree_z =Lmoments::Lmoments(z, na.rm = T)[4],
+                 Lskew_tree_z = Lmoments::Lcoefs(z, na.rm = T)[3],
+                 Lkurt_tree_z = Lmoments::Lcoefs(z, na.rm = T)[4],
                  max_tree_crown_area = max(crown_area),
                  min_tree_crown_area = min(crown_area),
                  qmean_tree_crown_area = sqrt(mean(crown_area^2)),
@@ -197,12 +197,12 @@ std_trees = function(trees)
                  aad_tree_crown_area = stats::mad(crown_area, center = mean(crown_area)),
                  skew_tree_crown_area = e1071::skewness(crown_area),
                  kurt_tree_crown_area = e1071::kurtosis(crown_area),
-                 L1_tree_crown_area = Lmoments::Lmoments(crown_area)[1],
-                 L2_tree_crown_area =Lmoments::Lmoments(crown_area)[2],
-                 L3_tree_crown_area =Lmoments::Lmoments(crown_area)[3],
-                 L4_tree_crown_area =Lmoments::Lmoments(crown_area)[4],
-                 Lskew_tree_crown_area = Lmoments::Lcoefs(crown_area)[3],
-                 Lkurt_tree_crown_area = Lmoments::Lcoefs(crown_area)[4]
+                 L1_tree_crown_area = Lmoments::Lmoments(crown_area, na.rm = T)[1],
+                 L2_tree_crown_area =Lmoments::Lmoments(crown_area, na.rm = T)[2],
+                 L3_tree_crown_area =Lmoments::Lmoments(crown_area, na.rm = T)[3],
+                 L4_tree_crown_area =Lmoments::Lmoments(crown_area, na.rm = T)[4],
+                 Lskew_tree_crown_area = Lmoments::Lcoefs(crown_area, na.rm = T)[3],
+                 Lkurt_tree_crown_area = Lmoments::Lcoefs(crown_area, na.rm = T)[4]
   )
   null_list <- lapply(metrics,is.null)
   metrics[do.call(rbind,null_list)] <- NA

@@ -233,7 +233,7 @@ vox_mt <- function(z, i)
     IQR_z_vox = IQR(z),
     skew_z_vox = e1071::skewness(z),
     kurt_z_vox = e1071::kurtosis(z),
-    i_SVI = median(i),
+    med_i_vox = median(i),
     mean_i_vox = mean(i),
     var_i_vox = var(i),
     sd_i_vox = sd(i),
@@ -247,14 +247,13 @@ vox_mt <- function(z, i)
   return(metrics)
 }
 
-#' Standard voxel metrics function
+#' Voxel metrics for individual voxels
 #'
 #' This function provides a variety of voxel based metrics based off similar metrics in
 #' Pearse et al. 2019 and Kim et al. 2016. The function also includes
 #' additional summary statistics for height and intensity values within each voxel
 #' @param las an las file (made for small, 0.01 ha, areas).
-#' @param resolution the size of voxels wanted for a majority of metrics unless defined by
-#' different height bins in Pearse et al. 2019.
+#' @param resolution the square dimensions of voxels.
 #' @keywords lidar voxel metrics
 #' @import data.table
 #' @import tidyr
@@ -263,8 +262,8 @@ vox_mt <- function(z, i)
 #' @examples
 #' std_voxel()
 
-std_voxel <- function(las, resolution){
 
+std_voxel_all <- function(las, resolution){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
 
   # create all possible voxels
@@ -349,7 +348,113 @@ std_voxel <- function(las, resolution){
   i_above_all_vox <- i_above_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
   fullvox <- fullvox %>% left_join(as.data.frame(i_above_all_vox[,c(4,5)]), by = "id_xyz" )
 
+  return(fullvox)
+}
 
+
+#' Standard voxel metrics function
+#'
+#' This function provides a variety of voxel based metrics based off similar metrics in
+#' Pearse et al. 2019 and Kim et al. 2016. The function also includes
+#' additional summary statistics for height and intensity values within each voxel
+#' @param las an las file (made for small, 0.01 ha, areas).
+#' @param resolution the size of voxels wanted for a majority of metrics unless defined by
+#' different height bins in Pearse et al. 2019.
+#' @keywords lidar voxel metrics
+#' @import data.table
+#' @import tidyr
+#' @import dplyr
+#' @export
+#' @examples
+#' std_voxel()
+
+
+
+std_voxel <- function(las, resolution){
+  #
+  vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
+
+  # create all possible voxels
+  x = seq(min(vox$X), max(vox$X), resolution)
+  y = seq(min(vox$Y), max(vox$Y), resolution)
+  z = seq(min(vox$Z), max(vox$Z), resolution)
+  all_vox = expand.grid(X = x, Y = y, Z = z)
+  data.table::setDT(all_vox)
+
+  # merge all and voxel_metrics() output
+  fullvox = vox[all_vox, on = c("X", "Y", "Z")]
+
+  # give each voxel a unique id and assign 0s and NAs where appropriate
+  fullvox <- fullvox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
+  fullvox$SVi[is.na(fullvox$SVi)] <- 0
+  null_list <- lapply(fullvox$Z_list,is.null)
+  fullvox$Z_list[do.call(rbind,null_list)] <- NA
+  fullvox$I_list[do.call(rbind,null_list)] <- NA
+
+  ##### Individual voxel metrics
+  ### FR_SVi is the frequency ratio of the number of returns in a voxel in relation to total returns (in Pearse et al. 2019 this is FR_Di)
+  fullvox <- fullvox %>% mutate(FR_SVi = SVi/sum(fullvox$SVi))
+
+  ### P_Di is the number of returns below each voxel (Pearse et al. 2019; Kim et al. 2016 uses returns above)
+  # create a vector for Z in each iteration
+  Zi = fullvox$Z
+
+  # for loop to calculate points below each voxel
+  point_blow = list()
+  for(i in 1:length(unique(fullvox$Z))){
+    np_b <- fullvox %>%
+      group_by(X,Y) %>%
+      filter(Z < unique(Z)[i]) %>%
+      summarize(npoints_below = sum(SVi), Z= unique(Zi)[i])
+    point_blow[[i]] <- np_b
+  }
+
+  # extract point below data and merge using the voxel id
+  point_blow_all_vox <- do.call(rbind,point_blow)
+  point_blow_all_vox <- point_blow_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
+  fullvox <- fullvox %>% left_join(as.data.frame(point_blow_all_vox[,c(3,5)]), by = "id_xyz", )
+
+  ### P_Di_above is the number of returns above each voxel (Kim et al. 2016 uses returns above as P_Di)
+  # for loop to calculate points below each voxel
+  point_above = list()
+  for(i in 1:length(unique(fullvox$Z))){
+    np_a <- fullvox %>%
+      group_by(X,Y) %>%
+      filter(Z > unique(Z)[i]) %>%
+      summarize(npoints_above = sum(SVi, na.rm = T), Z= unique(Zi)[i])
+    point_above[[i]] <- np_a
+  }
+
+  # extract point below data and merge using the voxel id
+  point_above_all_vox <- do.call(rbind,point_above)
+  point_above_all_vox <- point_above_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
+  fullvox <- fullvox %>% left_join(as.data.frame(point_above_all_vox[,c(3,5)]), by = "id_xyz", )
+  # NAs returned for 0 points so it is appropriate to replace them with 0
+  fullvox$npoints_above[is.na(fullvox$npoints_above)] <- 0
+
+  ### FR_Di is the frequency ratio of the number of returns above a voxel in relation to total returns (Kim et al. 2016)
+  fullvox <- fullvox %>% mutate(FR_Di = npoints_above/sum(fullvox$SVi))
+
+  ### I_Di is the median intensity of returns above each voxel
+  # for loop to calculate median intensity above each voxel
+  i_above = list()
+  for(i in 1:length(unique(fullvox$Z))){
+    i_a <- fullvox %>% filter(Z > Z[i])
+    i_a$I_list<- lapply( i_a$I_list, "length<-", max(lengths( i_a$I_list)))
+    i_abv <- as.data.frame(do.call(rbind, i_a$I_list))
+
+    i_a_merge <- cbind(as.data.frame(i_a), i_abv)
+    i_a_merge <- cbind(X = i_a_merge$X, Y = i_a_merge$Y, i_a_merge[,ncol(i_a)+1:(ncol(i_a_merge)-ncol(i_a))])
+    i_Di_mt <- i_a_merge %>% pivot_longer(cols = 3:ncol(i_a_merge)) %>%
+      group_by(X,Y) %>%
+      summarize(Z = unique(fullvox$Z)[i], i_Di = median(value, na.rm = T))
+    i_above[[i]] <- i_Di_mt
+  }
+
+  # extract point below data and merge using the voxel id
+  i_above_all_vox <- do.call(rbind,i_above)
+  i_above_all_vox <- i_above_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
+  fullvox <- fullvox %>% left_join(as.data.frame(i_above_all_vox[,c(4,5)]), by = "id_xyz" )
   ##### Summarized voxel metrics
   ### Start by summarizing individual voxel metrics
   voxel_summ <- fullvox %>% summarise(z_med_med = median(med_z_vox, na.rm = T),
@@ -416,14 +521,14 @@ std_voxel <- function(las, resolution){
                                       z_kurt_IQR = IQR(kurt_z_vox, na.rm = T),
                                       z_kurt_skew = e1071::skewness(kurt_z_vox, na.rm = T),
                                       z_kurt_kurt = e1071::kurtosis(kurt_z_vox, na.rm = T),
-                                      i_SVI_med = median(i_SVI, na.rm = T),
-                                      i_SVI_mean = mean(i_SVI, na.rm = T),
-                                      i_SVI_var = var(i_SVI, na.rm = T),
-                                      i_SVI_sd = sd(i_SVI, na.rm = T),
-                                      i_SVI_cv = sd(i_SVI, na.rm = T)/mean(i_SVI, na.rm = T),
-                                      i_SVI_IQR = IQR(i_SVI, na.rm = T),
-                                      i_SVI_skew = e1071::skewness(i_SVI, na.rm = T),
-                                      i_SVFr_Di = e1071::kurtosis(i_SVI, na.rm = T),
+                                      i_vox_med = median(med_i_vox, na.rm = T),
+                                      i_med_mean = mean(med_i_vox, na.rm = T),
+                                      i_med_var = var(med_i_vox, na.rm = T),
+                                      i_med_sd = sd(med_i_vox, na.rm = T),
+                                      i_med_cv = sd(med_i_vox, na.rm = T)/mean(med_i_vox, na.rm = T),
+                                      i_med_IQR = IQR(med_i_vox, na.rm = T),
+                                      i_med_skew = e1071::skewness(med_i_vox, na.rm = T),
+                                      i_med_kurt = e1071::kurtosis(med_i_vox, na.rm = T),
                                       i_mean_med = median(mean_i_vox, na.rm = T),
                                       i_mean_mean = mean(mean_i_vox, na.rm = T),
                                       i_mean_var = var(mean_i_vox, na.rm = T),
@@ -487,7 +592,7 @@ std_voxel <- function(las, resolution){
                                       P_Di_cv = sd(npoints_below, na.rm = T)/mean(npoints_below, na.rm = T),
                                       P_Di_IQR = IQR(npoints_below, na.rm = T),
                                       P_Di_skew = e1071::skewness(npoints_below, na.rm = T),
-                                      P_DFr_Di = e1071::kurtosis(npoints_below, na.rm = T),
+                                      P_Di_kurt = e1071::kurtosis(npoints_below, na.rm = T),
                                       npoints_above_med = median(npoints_above, na.rm = T),
                                       npoints_above_mean = mean(npoints_above, na.rm = T),
                                       npoints_above_var = var(npoints_above, na.rm = T),

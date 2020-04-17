@@ -4,7 +4,7 @@
 \alias{std_voxel_all}
 \title{Voxel metrics for individual voxels}
 \usage{
-std_voxel_all(las, resolution)
+std_voxel_all(las, resolution, vox_ht)
 }
 \arguments{
 \item{las}{an las file (made for small, 0.01 ha, areas).}

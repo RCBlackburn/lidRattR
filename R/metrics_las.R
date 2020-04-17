@@ -254,6 +254,7 @@ vox_mt <- function(z, i)
 #' additional summary statistics for height and intensity values within each voxel
 #' @param las an las file (made for small, 0.01 ha, areas).
 #' @param resolution the square dimensions of voxels.
+#' @param vox_ht  max height of voxels on plot. This is best to be used as the max height of the trees wihtin plots
 #' @keywords lidar voxel metrics
 #' @import data.table
 #' @import tidyr

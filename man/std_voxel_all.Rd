@@ -10,6 +10,8 @@ std_voxel_all(las, resolution, vox_ht)
 \item{las}{an las file (made for small, 0.01 ha, areas).}
 
 \item{resolution}{the square dimensions of voxels.}
+
+\item{vox_ht}{max height of voxels on plot. This is best to be used as the max height of the trees wihtin plots}
 }
 \description{
 This function provides a variety of voxel based metrics based off similar metrics in

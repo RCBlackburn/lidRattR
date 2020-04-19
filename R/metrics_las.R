@@ -255,6 +255,8 @@ vox_mt <- function(z, i)
 #' @param las an las file (made for small, 0.01 ha, areas).
 #' @param resolution the square dimensions of voxels.
 #' @param vox_ht  max height of voxels on plot. This is best to be used as the max height of the trees wihtin plots
+#' @param vox_x is a combination of min and max x of plot. Default is  c(min(vox$X), max(vox$X))
+#' @param vox_y is a combination of min and max x of plot. Default is  c(min(vox$Y), max(vox$Y))
 #' @keywords lidar voxel metrics
 #' @import data.table
 #' @import tidyr
@@ -264,12 +266,12 @@ vox_mt <- function(z, i)
 #' std_voxel()
 
 
-std_voxel_all <- function(las, resolution, vox_ht){
+std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z), vox_x = c(min(vox$X), max(vox$X)), vox_y = c(min(vox$Y), max(vox$Y))){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
 
   # create all possible voxels
-  x = seq(min(vox$X), max(vox$X), resolution)
-  y = seq(min(vox$Y), max(vox$Y), resolution)
+  x = seq(vox_x[1], vox_x[2], resolution)
+  y = seq(vox_y[1], vox_y[2], resolution)
   z = seq(min(vox$Z), vox_ht, resolution)
   all_vox = expand.grid(X = x, Y = y, Z = z)
   data.table::setDT(all_vox)

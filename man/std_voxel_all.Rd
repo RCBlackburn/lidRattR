@@ -4,7 +4,13 @@
 \alias{std_voxel_all}
 \title{Voxel metrics for individual voxels}
 \usage{
-std_voxel_all(las, resolution, vox_ht)
+std_voxel_all(
+  las,
+  resolution,
+  vox_ht = max(vox$Z),
+  vox_x = c(min(vox$X), max(vox$X)),
+  vox_y = c(min(vox$Y), max(vox$Y))
+)
 }
 \arguments{
 \item{las}{an las file (made for small, 0.01 ha, areas).}
@@ -12,6 +18,10 @@ std_voxel_all(las, resolution, vox_ht)
 \item{resolution}{the square dimensions of voxels.}
 
 \item{vox_ht}{max height of voxels on plot. This is best to be used as the max height of the trees wihtin plots}
+
+\item{vox_x}{is a combination of min and max x of plot. Default is  c(min(vox$X), max(vox$X))}
+
+\item{vox_y}{is a combination of min and max x of plot. Default is  c(min(vox$Y), max(vox$Y))}
 }
 \description{
 This function provides a variety of voxel based metrics based off similar metrics in

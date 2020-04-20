@@ -4,7 +4,7 @@
 \alias{vox_mt}
 \title{Voxel metrics function}
 \usage{
-vox_mt(z, i)
+vox_mt(z, i, classification)
 }
 \arguments{
 \item{z}{height}

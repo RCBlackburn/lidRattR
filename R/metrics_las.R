@@ -221,28 +221,28 @@ std_trees = function(trees)
 #' @examples
 #' voxels <- voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
 
-vox_mt <- function(z, i)
-{
+vox_mt <- function(z, i, classification)
+{ df <- as.data.frame(cbind(z,i,classification))
   metrics =list(
-    SVi = length(z), # number of points in a voxel (notation from Pearse et al. 2019)
-    med_z_vox = median(z),
-    mean_z_vox = mean(z),
-    var_z_vox = var(z),
-    sd_z_vox = sd(z),
-    cv_z_vox = sd(z)/mean(z),
-    IQR_z_vox = IQR(z),
-    skew_z_vox = e1071::skewness(z),
-    kurt_z_vox = e1071::kurtosis(z),
-    med_i_vox = median(i),
-    mean_i_vox = mean(i),
-    var_i_vox = var(i),
-    sd_i_vox = sd(i),
-    cv_i_vox = sd(i)/mean(i),
-    IQR_i_vox = IQR(i),
-    skew_i_vox = e1071::skewness(i),
-    kurt_i_vox = e1071::kurtosis(i),
-    Z_list = list(z),
-    I_list = list(as.numeric(i))
+    SVi = length(df$z[df$classification == 1]), # number of points in a voxel (notation from Pearse et al. 2019)
+    med_z_vox = median(df$z[df$classification == 1]),
+    mean_z_vox = mean(df$z[df$classification == 1]),
+    var_z_vox = var(df$z[df$classification == 1]),
+    sd_z_vox = sd(df$z[df$classification == 1]),
+    cv_z_vox = sd(df$z[df$classification == 1])/mean(df$z[df$classification == 1]),
+    IQR_z_vox = IQR(df$z[df$classification == 1]),
+    skew_z_vox = e1071::skewness(df$z[df$classification == 1]),
+    kurt_z_vox = e1071::kurtosis(df$z[df$classification == 1]),
+    med_i_vox = median(df$i[df$classification == 1]),
+    mean_i_vox = mean(df$i[df$classification == 1]),
+    var_i_vox = var(df$i[df$classification == 1]),
+    sd_i_vox = sd(df$i[df$classification == 1]),
+    cv_i_vox = sd(df$i[df$classification == 1])/mean(df$i[df$classification == 1]),
+    IQR_i_vox = IQR(df$i[df$classification == 1]),
+    skew_i_vox = e1071::skewness(df$i[df$classification == 1]),
+    kurt_i_vox = e1071::kurtosis(df$i[df$classification == 1]),
+    Z_list = list(df$z[df$classification == 1]),
+    I_list = list(as.numeric(df$i[df$classification == 1]))
   )
   return(metrics)
 }

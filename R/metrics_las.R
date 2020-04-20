@@ -341,9 +341,10 @@ std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z),
   ### I_Di is the median intensity of returns above each voxel
   # for loop to calculate median intensity above each voxel
   i_above = list()
+  fullvox$I_list<- lapply( fullvox$I_list, "length<-", max(lengths( fullvox$I_list)))
   for(i in 1:length(unique(fullvox$Z))){
-    i_a <- fullvox %>% filter(Z > Z[i])
-    i_a$I_list<- lapply( i_a$I_list, "length<-", max(lengths( i_a$I_list)))
+    i_a <- fullvox %>% filter(Z > unique(fullvox$Z)[i])
+    if(nrow(i_a) ==0) return(NULL)
     i_abv <- as.data.frame(do.call(rbind, i_a$I_list))
 
     i_a_merge <- cbind(as.data.frame(i_a), i_abv)

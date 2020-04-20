@@ -266,8 +266,10 @@ vox_mt <- function(z, i)
 #' std_voxel()
 
 
-std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z), vox_x = c(min(vox$X), max(vox$X)), vox_y = c(min(vox$Y), max(vox$Y))){
-  vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
+std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z),
+                          vox_x = c(min(vox$X), max(vox$X)), vox_y = c(min(vox$Y), max(vox$Y)),
+                          sf_poly){
+  vox <- lidR::voxel_metrics(med, func = vox_mt(Z, as.numeric(Intensity)), res = 1)
 
   # create all possible voxels
   x = seq(vox_x[1], vox_x[2], resolution)
@@ -279,6 +281,12 @@ std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z), vox_x = c(min(vo
   # merge all and voxel_metrics() output
   fullvox = vox[all_vox, on = c("X", "Y", "Z")]
 
+  fullvox.df <- as.data.frame(fullvox)
+  full_vox.sf <- st_as_sf(fullvox.df, coords = c('X', 'Y'), crs = st_crs(sf_poly))
+  fullvox.crop <- st_intersection(sf_poly, full_vox.sf)
+  fullvox <- cbind(X = st_coordinates(fullvox.crop)[,1], Y = st_coordinates(fullvox.crop)[,2],
+        fullvox.crop[,c(which(colnames(fullvox.crop) =="Z"):ncol(fullvox.crop))])
+  fullvox <- as.data.frame(fullvox)
   # give each voxel a unique id and assign 0s and NAs where appropriate
   fullvox <- fullvox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
   fullvox$SVi[is.na(fullvox$SVi)] <- 0

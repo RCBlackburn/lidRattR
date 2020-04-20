@@ -9,7 +9,8 @@ std_voxel_all(
   resolution,
   vox_ht = max(vox$Z),
   vox_x = c(min(vox$X), max(vox$X)),
-  vox_y = c(min(vox$Y), max(vox$Y))
+  vox_y = c(min(vox$Y), max(vox$Y)),
+  sf_poly
 )
 }
 \arguments{

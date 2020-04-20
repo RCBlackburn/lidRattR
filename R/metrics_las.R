@@ -384,7 +384,7 @@ std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z),
 
 std_voxel <- function(las, resolution){
   #
-  vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
+  vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity), Classification), res = resolution)
 
   # create all possible voxels
   x = seq(min(vox$X), max(vox$X), resolution)

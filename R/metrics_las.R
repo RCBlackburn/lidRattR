@@ -344,7 +344,7 @@ std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z),
   fullvox$I_list<- lapply( fullvox$I_list, "length<-", max(lengths( fullvox$I_list)))
   for(i in 1:length(unique(fullvox$Z))){
     i_a <- fullvox %>% filter(Z > unique(fullvox$Z)[i])
-    if(nrow(i_a) ==0 | sum(i_a$SVi) == 0) return(NULL)
+    if(nrow(i_a) == 0 | sum(i_a$SVi) == 0) {next}
     i_abv <- as.data.frame(do.call(rbind, i_a$I_list))
 
     i_a_merge <- cbind(as.data.frame(i_a), i_abv)

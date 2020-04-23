@@ -260,6 +260,7 @@ vox_mt <- function(z, i)
 #' @keywords lidar voxel metrics
 #' @import tidyr
 #' @import dplyr
+#' @import data.table
 #' @export
 #' @examples
 #' std_voxel()
@@ -267,7 +268,7 @@ vox_mt <- function(z, i)
 
 
 std_voxel <- function(las, resolution, sf_poly){
-  #
+  #0
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
 
   # create all possible voxels

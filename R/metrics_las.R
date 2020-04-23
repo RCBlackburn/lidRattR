@@ -14,9 +14,9 @@ std_cloud <- function(x, y, z, ReturnNumber)
 {
   # number of returns
   npoints = length(z)
-  npoints_1 = length(ReturnNumber[ReturnNumber == 1])
-  npoints_2 = length(ReturnNumber[ReturnNumber == 2])
-  npoints_3 = length(ReturnNumber[ReturnNumber == 3])
+  per_points_1 = length(ReturnNumber[ReturnNumber == 1])/ length(z)
+  per_points_2 = length(ReturnNumber[ReturnNumber == 2])/ length(z)
+  per_points_3 = length(ReturnNumber[ReturnNumber == 3])/ length(z)
   # height statistics
   zmax = max(z)
   zmin = min(z)
@@ -79,9 +79,9 @@ std_cloud <- function(x, y, z, ReturnNumber)
   prct_ab_mode = sum(mode(z) >= 20)/ length(z)
   metrics = list(
     npts = npoints,
-    npnts_1 = npoints_1,
-    npnts_2 = npoints_2,
-    npnts_3 = npoints_3,
+    per_pnts_1 = per_points_1,
+    per_pnts_2 = per_points_2,
+    per_pnts_3 = per_points_3,
     zmax = zmax,
     zmin = zmin,
     zmode = zmode,
@@ -224,7 +224,6 @@ std_trees = function(trees)
 vox_mt <- function(z, i)
 {
   metrics =list(
-    ground = length(z),
     SVi = length(z), # number of points in a voxel (notation from Pearse et al. 2019)
     med_z_vox = median(z),
     mean_z_vox = mean(z),

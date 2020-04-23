@@ -3,8 +3,6 @@
 export(std_cloud)
 export(std_trees)
 export(std_voxel)
-export(std_voxel_all)
 export(vox_mt)
-import(data.table)
 import(dplyr)
 import(tidyr)

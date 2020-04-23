@@ -248,133 +248,16 @@ vox_mt <- function(z, i, classification)
   return(metrics)
 }
 
-#' Voxel metrics for individual voxels
-#'
-#' This function provides a variety of voxel based metrics based off similar metrics in
-#' Pearse et al. 2019 and Kim et al. 2016. The function also includes
-#' additional summary statistics for height and intensity values within each voxel
-#' @param las an las file (made for small, 0.01 ha, areas).
-#' @param resolution the square dimensions of voxels.
-#' @param vox_ht  max height of voxels on plot. This is best to be used as the max height of the trees wihtin plots
-#' @param vox_x is a combination of min and max x of plot. Default is  c(min(vox$X), max(vox$X))
-#' @param vox_y is a combination of min and max x of plot. Default is  c(min(vox$Y), max(vox$Y))
-#' @keywords lidar voxel metrics
-#' @import data.table
-#' @import tidyr
-#' @import dplyr
-#' @export
-#' @examples
-#' std_voxel()
-
-
-std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z),
-                          vox_x = c(min(vox$X), max(vox$X)), vox_y = c(min(vox$Y), max(vox$Y)),
-                          sf_poly){
-  vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity), Classification), res = resolution)
-
-  # create all possible voxels
-  x = seq(vox_x[1], vox_x[2], resolution)
-  y = seq(vox_y[1], vox_y[2], resolution)
-  z = seq(min(vox$Z), vox_ht, resolution)
-  all_vox = expand.grid(X = x, Y = y, Z = z)
-  data.table::setDT(all_vox)
-
-  # merge all and voxel_metrics() output
-  fullvox = vox[all_vox, on = c("X", "Y", "Z")]
-
-  fullvox.df <- as.data.frame(fullvox)
-  full_vox.sf <- st_as_sf(fullvox.df, coords = c('X', 'Y'), crs = st_crs(sf_poly))
-  fullvox.crop <- st_intersection(sf_poly, full_vox.sf)
-  fullvox <- cbind(X = st_coordinates(fullvox.crop)[,1], Y = st_coordinates(fullvox.crop)[,2],
-        fullvox.crop[,c(which(colnames(fullvox.crop) =="Z"):ncol(fullvox.crop))])
-  fullvox <- as.data.frame(fullvox)
-  # give each voxel a unique id and assign 0s and NAs where appropriate
-  fullvox <- fullvox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
-  fullvox$SVi[is.na(fullvox$SVi)] <- 0
-  null_list <- lapply(fullvox$Z_list,is.null)
-  fullvox$Z_list[do.call(rbind,null_list)] <- NA
-  fullvox$I_list[do.call(rbind,null_list)] <- NA
-
-  ##### Individual voxel metrics
-  ### FR_SVi is the frequency ratio of the number of returns in a voxel in relation to total returns (in Pearse et al. 2019 this is FR_Di)
-  fullvox <- fullvox %>% mutate(FR_SVi = SVi/sum(fullvox$SVi))
-
-  ### P_Di is the number of returns below each voxel (Pearse et al. 2019; Kim et al. 2016 uses returns above)
-  # create a vector for Z in each iteration
-  Zi = fullvox$Z
-
-  # for loop to calculate points below each voxel
-  point_blow = list()
-  for(i in 1:length(unique(fullvox$Z))){
-    np_b <- fullvox %>%
-      group_by(X,Y) %>%
-      filter(Z < unique(Z)[i]) %>%
-      summarize(npoints_below = sum(SVi), Z= unique(Zi)[i])
-    point_blow[[i]] <- np_b
-  }
-
-  # extract point below data and merge using the voxel id
-  point_blow_all_vox <- do.call(rbind,point_blow)
-  point_blow_all_vox <- point_blow_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
-  fullvox <- fullvox %>% left_join(as.data.frame(point_blow_all_vox[,c(3,5)]), by = "id_xyz", )
-
-  ### P_Di_above is the number of returns above each voxel (Kim et al. 2016 uses returns above as P_Di)
-  # for loop to calculate points below each voxel
-  point_above = list()
-  for(i in 1:length(unique(fullvox$Z))){
-    np_a <- fullvox %>%
-      group_by(X,Y) %>%
-      filter(Z > unique(Z)[i]) %>%
-      summarize(npoints_above = sum(SVi, na.rm = T), Z= unique(Zi)[i])
-    point_above[[i]] <- np_a
-  }
-
-  # extract point below data and merge using the voxel id
-  point_above_all_vox <- do.call(rbind,point_above)
-  point_above_all_vox <- point_above_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
-  fullvox <- fullvox %>% left_join(as.data.frame(point_above_all_vox[,c(3,5)]), by = "id_xyz", )
-  # NAs returned for 0 points so it is appropriate to replace them with 0
-  fullvox$npoints_above[is.na(fullvox$npoints_above)] <- 0
-
-  ### FR_Di is the frequency ratio of the number of returns above a voxel in relation to total returns (Kim et al. 2016)
-  fullvox <- fullvox %>% mutate(FR_Di = npoints_above/sum(fullvox$SVi))
-
-  ### I_Di is the median intensity of returns above each voxel
-  # for loop to calculate median intensity above each voxel
-  i_above = list()
-  fullvox$I_list<- lapply( fullvox$I_list, "length<-", max(lengths( fullvox$I_list)))
-  for(i in 1:length(unique(fullvox$Z))){
-    i_a <- fullvox %>% filter(Z > unique(fullvox$Z)[i])
-    if(nrow(i_a) == 0 | sum(i_a$SVi) == 0) {next}
-    i_abv <- as.data.frame(do.call(rbind, i_a$I_list))
-
-    i_a_merge <- cbind(as.data.frame(i_a), i_abv)
-    i_a_merge <- cbind(X = i_a_merge$X, Y = i_a_merge$Y, i_a_merge[,ncol(i_a)+1:(ncol(i_a_merge)-ncol(i_a))])
-    i_Di_mt <- i_a_merge %>% pivot_longer(cols = 3:ncol(i_a_merge)) %>%
-      group_by(X,Y) %>%
-      summarize(Z = unique(fullvox$Z)[i], i_Di = median(value, na.rm = T))
-    i_above[[i]] <- i_Di_mt
-  }
-
-  # extract point below data and merge using the voxel id
-  i_above_all_vox <- do.call(rbind,i_above)
-  i_above_all_vox <- i_above_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
-  fullvox <- fullvox %>% left_join(as.data.frame(i_above_all_vox[,c(4,5)]), by = "id_xyz" )
-
-  return(fullvox)
-}
-
-
 #' Standard voxel metrics function
 #'
 #' This function provides a variety of voxel based metrics based off similar metrics in
 #' Pearse et al. 2019 and Kim et al. 2016. The function also includes
 #' additional summary statistics for height and intensity values within each voxel
-#' @param las an las file (made for small, 0.01 ha, areas).
+#' @param las an las file (made for small, 0.01 ha, areas)
 #' @param resolution the size of voxels wanted for a majority of metrics unless defined by
+#' @param sf_poly sf polygon to clip voxels to. Required.
 #' different height bins in Pearse et al. 2019.
 #' @keywords lidar voxel metrics
-#' @import data.table
 #' @import tidyr
 #' @import dplyr
 #' @export
@@ -383,7 +266,7 @@ std_voxel_all <- function(las, resolution, vox_ht = max(vox$Z),
 
 
 
-std_voxel <- function(las, resolution){
+std_voxel <- function(las, resolution, sf_poly){
   #
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity), Classification), res = resolution)
 
@@ -397,6 +280,12 @@ std_voxel <- function(las, resolution){
   # merge all and voxel_metrics() output
   fullvox = vox[all_vox, on = c("X", "Y", "Z")]
 
+  fullvox.df <- as.data.frame(fullvox)
+  full_vox.sf <- st_as_sf(fullvox.df, coords = c('X', 'Y'), crs = st_crs(sf_poly))
+  fullvox.crop <- st_intersection(sf_poly, full_vox.sf)
+  fullvox <- cbind(X = st_coordinates(fullvox.crop)[,1], Y = st_coordinates(fullvox.crop)[,2],
+                   fullvox.crop[,c(which(colnames(fullvox.crop) =="Z"):ncol(fullvox.crop))])
+  fullvox <- as.data.frame(fullvox)
   # give each voxel a unique id and assign 0s and NAs where appropriate
   fullvox <- fullvox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
   fullvox$SVi[is.na(fullvox$SVi)] <- 0

@@ -4,12 +4,14 @@
 \alias{std_voxel}
 \title{Standard voxel metrics function}
 \usage{
-std_voxel(las, resolution)
+std_voxel(las, resolution, sf_poly)
 }
 \arguments{
-\item{las}{an las file (made for small, 0.01 ha, areas).}
+\item{las}{an las file (made for small, 0.01 ha, areas)}
 
-\item{resolution}{the size of voxels wanted for a majority of metrics unless defined by
+\item{resolution}{the size of voxels wanted for a majority of metrics unless defined by}
+
+\item{sf_poly}{sf polygon to clip voxels to. Required.
 different height bins in Pearse et al. 2019.}
 }
 \description{

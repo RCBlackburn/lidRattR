@@ -657,6 +657,15 @@ std_voxel <- function(las, resolution, sf_poly){
 
     # Merge both unsing a join
     fullvox_vci = vox_vci[all_vox_vci, on = c("X", "Y", "Z")]
+
+    # crop to poly
+    fullvox_vci.df <- as.data.frame(fullvox_vci)
+    fullvox_vci.sf <- st_as_sf(fullvox_vci.df, coords = c('X', 'Y'), crs = st_crs(sf_poly))
+    fullvox_vci.crop <- st_intersection(sf_poly, fullvox_vci.sf)
+    fullvox_vci <- cbind(X = st_coordinates(fullvox_vci.crop)[,1], Y = st_coordinates(fullvox_vci.crop)[,2],
+                         fullvox_vci.crop[,c(which(colnames(fullvox_vci.crop) =="Z"):ncol(fullvox_vci.crop))])
+    fullvox_vci <- as.data.frame(fullvox_vci)
+
     fullvox_vci <- fullvox_vci %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
     fullvox_vci$SVi[is.na(fullvox_vci$SVi)] <- 0
     npoints_XY_vci <- fullvox_vci %>% group_by(X,Y) %>% summarize(npoints = sum(SVi), na.rm = T)

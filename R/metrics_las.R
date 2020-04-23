@@ -224,6 +224,7 @@ std_trees = function(trees)
 vox_mt <- function(z, i, classification)
 { df <- as.data.frame(cbind(z,i,classification))
   metrics =list(
+    ground = length(z),
     SVi = length(df$z[df$classification == 1]), # number of points in a voxel (notation from Pearse et al. 2019)
     med_z_vox = median(df$z[df$classification == 1]),
     mean_z_vox = mean(df$z[df$classification == 1]),

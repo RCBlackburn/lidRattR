@@ -4,7 +4,7 @@
 \alias{std_voxel}
 \title{Standard voxel metrics function}
 \usage{
-std_voxel(las, resolution, sf_poly)
+std_voxel(las, resolution, max_ht = max(vox$Z), sf_poly)
 }
 \arguments{
 \item{las}{an las file (made for small, 0.01 ha, areas)}

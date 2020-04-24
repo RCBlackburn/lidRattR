@@ -264,14 +264,13 @@ vox_mt <- function(z, i)
 #' @examples
 #' std_voxel()
 
-std_voxel <- function(las, resolution, sf_poly){
-  #0
+std_voxel <- function(las, resolution, max_ht = max(vox$Z), sf_poly){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
 
   # create all possible voxels
   x = seq(min(vox$X), max(vox$X), resolution)
   y = seq(min(vox$Y), max(vox$Y), resolution)
-  z = seq(min(vox$Z), max(vox$Z), resolution)
+  z = seq(min(vox$Z), max_ht, resolution)
   all_vox = expand.grid(X = x, Y = y, Z = z)
   data.table::setDT(all_vox)
 

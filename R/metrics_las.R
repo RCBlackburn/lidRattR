@@ -263,7 +263,6 @@ vox_mt <- function(z, i)
 #' @export
 #' @examples
 #' std_voxel()
-sf_poly = med.poly
 
 std_voxel <- function(las, resolution, sf_poly){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)

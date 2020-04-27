@@ -289,7 +289,6 @@ std_voxel <- function(las, resolution, sf_poly){
   null_list <- lapply(fullvox$Z_list,is.null)
   fullvox$Z_list[do.call(rbind,null_list)] <- NA
   fullvox$I_list[do.call(rbind,null_list)] <- NA
-
   ##### Individual voxel metrics
   ### FR_SVi is the frequency ratio of the number of returns in a voxel in relation to total returns (in Pearse et al. 2019 this is FR_Di)
   fullvox <- fullvox %>% mutate(FR_SVi = SVi/sum(fullvox$SVi))
@@ -517,7 +516,8 @@ std_voxel <- function(las, resolution, sf_poly){
                                       i_Di_cv = sd(i_Di, na.rm = T)/mean(i_Di, na.rm = T),
                                       i_Di_IQR = IQR(i_Di, na.rm = T),
                                       i_Di_skew = e1071::skewness(i_Di, na.rm = T),
-                                      i_Di_kurt = e1071::kurtosis(i_Di, na.rm = T)
+                                      i_Di_kurt = e1071::kurtosis(i_Di, na.rm = T),
+                                      pct_fill_vox = nrow(vox) /nrow(fullvox)
 
 
   )

@@ -283,15 +283,9 @@ vox_mt <- function(z, i)
 #' @keywords lidar voxel metrics
 #' @import data.table
 #' @import dplyr
-#' @import
 #' @export
 #' @examples
 #' std_voxel()
-
-
-las <- med
-sf_poly <- med.poly
-resolution = 1
 
 std_voxel <- function(las, resolution, sf_poly){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)

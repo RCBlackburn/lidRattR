@@ -284,7 +284,6 @@ vox_mt <- function(z, i)
 #' @examples
 #' std_voxel()
 
-
 std_voxel <- function(las, resolution, sf_poly){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
 
@@ -631,24 +630,26 @@ std_voxel <- function(las, resolution, sf_poly){
 
   npoints_XY <- fullvox %>% group_by(X,Y) %>% summarize(npoints = sum(SVi, na.rm = T))
 
+
   pcc_list  <-  lapply(ht_bin, function(x) {
     point_density <- fullvox %>%
-      filter(if(x < max(ht_bin)) { Z >=x & Z < (x+1)}  else(Z >= max(ht_bin))) %>%
+      filter(if(x < max(ht_bin)) { Z >= x & Z < (x + 1)}  else(Z >= max(ht_bin))) %>%
       group_by(X,Y) %>%
       summarize(pt_density = sum(SVi))
     if(nrow(point_density) == 0) {return(NULL)} else{
-    point_density$pcc = point_density$pt_density/ npoints_XY$npoints
+    point_density$pcc <- point_density$pt_density/ npoints_XY$npoints
     point_density$ht_bin <- x
     return(point_density)
     }
   } )
 
   pcc_bins <- do.call(rbind, pcc_list)
+  if(is.null(pcc_bins)){pcc <- NA} else{
   pcc_bins$pcc[is.na(pcc_bins$pcc)] <- 0
   pcc_bins <- as.data.frame(pcc_bins)
   pcc_XY <- pcc_bins %>% group_by(X,Y) %>% summarise(pcc = sum(pcc))
 
-  pcc <- mean(pcc_XY$pcc)
+  pcc <- mean(pcc_XY$pcc)}
 
   voxel_summ <- cbind(voxel_summ, pcc = pcc)
 

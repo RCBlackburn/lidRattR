@@ -645,6 +645,7 @@ std_voxel <- function(las, resolution, sf_poly){
 
   pcc_bins <- do.call(rbind, pcc_list)
   pcc_bins$pcc[is.na(pcc_bins$pcc)] <- 0
+  pcc_bins <- as.data.frame(pcc_bins)
   pcc_XY <- pcc_bins %>% group_by(X,Y) %>% summarise(pcc = sum(pcc))
 
   pcc <- mean(pcc_XY$pcc)

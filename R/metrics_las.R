@@ -44,16 +44,16 @@ std_cloud <- function(x, y, z, i, ReturnNumber)
   names(zquantiles) = paste0("qHt_",substr(names(zquantiles),1,nchar(names(zquantiles))-1))
   # Percent returns at height bins
   d5 = (sum(z <= 5)/length(z))*100
-  d10 = (sum(z <= 10 & z > 5 )/length(z))*100
-  d15 = (sum(z <= 15 & z > 10 )/length(z))*100
-  d20 = (sum(z <= 20 & z > 15 )/length(z))*100
-  d25 = (sum(z <= 25 & z > 20 )/length(z))*100
-  d30 = (sum(z <= 30 & z > 25 )/length(z))*100
-  d35 = (sum(z <= 35 & z > 30 )/length(z))*100
-  d40 = (sum(z <= 40 & z > 35 )/length(z))*100
-  d45 = (sum(z <= 45 & z > 40 )/length(z))*100
-  d50 = (sum(z <= 50 & z > 45 )/length(z))*100
-  d55 = (sum(z > 50 )/length(z))*100
+  d10 = (sum(z <= 10 & z > 5, na.rm = T )/length(z))*100
+  d15 = (sum(z <= 15 & z > 10, na.rm = T )/length(z))*100
+  d20 = (sum(z <= 20 & z > 15, na.rm = T )/length(z))*100
+  d25 = (sum(z <= 25 & z > 20, na.rm = T )/length(z))*100
+  d30 = (sum(z <= 30 & z > 25, na.rm = T )/length(z))*100
+  d35 = (sum(z <= 35 & z > 30, na.rm = T )/length(z))*100
+  d40 = (sum(z <= 40 & z > 35, na.rm = T )/length(z))*100
+  d45 = (sum(z <= 45 & z > 40, na.rm = T )/length(z))*100
+  d50 = (sum(z <= 50 & z > 45, na.rm = T )/length(z))*100
+  d55 = (sum(z > 50, na.rm = T )/length(z))*100
   # Deciles and cumulative deciles
   if (zmax <= 0)
   {
@@ -64,7 +64,7 @@ std_cloud <- function(x, y, z, i, ReturnNumber)
     breaks = seq(0, zmax, zmax/10)
     d = findInterval(z, breaks)
     d = table(d)[1:10]
-    d = d / sum(d)*100
+    d = d / sum(d, na.rm = T)*100
     d = as.list(d[1:9])
   }
   names(d) = paste0("decile", 1:9)
@@ -99,7 +99,7 @@ std_cloud <- function(x, y, z, i, ReturnNumber)
   ientropy = lidR::entropy(i)
 
   # Intesity cumulative quantiles
-  icum = lapply(zquantiles, function(x) (sum(i[z <= x])/itotal)*100)
+  icum = lapply(zquantiles, function(x) (sum(i[z <= x], na.rm = T)/itotal)*100)
   names(icum) = paste0("icum_", names(icum))
 
 
@@ -174,9 +174,6 @@ std_cloud <- function(x, y, z, i, ReturnNumber)
 #' @keywords lidar tree metrics
 #' @export
 #' @examples
-#' trees <- lastrees(las.t, watershed(chm))
-#' trees <- tree_metrics(trees, func = .stdtreemetrics )
-#' tree_stats <- std_trees(trees)
 
 std_trees = function(trees){
   sf::st_as_sf(trees)
@@ -201,8 +198,8 @@ std_trees = function(trees){
                  cv_tree_z = sd(z)/mean(z),
                  IQR_tree_z = IQR(z),
                  aad_tree_z = stats::mad(z, center = mean(z)),
-                 skew_tree_z = (sum((z -  mean(z)^3)/nrow(trees)))/(sum((z - mean(z))^2)/nrow(trees))^(3/2),
-                 kurt_tree_z = nrow(trees)*sum((z - mean(z))^4)/(sum((z - mean(z))^2)^2),
+                 skew_tree_z = (sum((z - mean(z, na.rm = T))^3, na.rm = T)/nrow(trees))/(sum((z - mean(z, na.rm = T))^2, na.rm = T)/nrow(trees))^(3/2),
+                 kurt_tree_z = nrow(trees)*sum((z - mean(z, na.rm = T))^4, na.rm = T)/(sum((z - mean(z, na.rm = T))^2, na.rm = T)^2),
                  L1_tree_z = Lmoments::Lmoments(z)[1],
                  L2_tree_z =Lmoments::Lmoments(z)[2],
                  L3_tree_z =Lmoments::Lmoments(z)[3],
@@ -219,8 +216,8 @@ std_trees = function(trees){
                  cv_tree_crown_area = sd(crown_area)/mean(crown_area),
                  IQR_tree_crown_area = IQR(crown_area),
                  aad_tree_crown_area = stats::mad(crown_area, center = mean(crown_area)),
-                 skew_tree_crown_area = (sum((crown_area - mean(crown_area)^3)/nrow(trees)))/(sum((crown_area - mean(crown_area))^2)/nrow(trees))^(3/2),
-                 kurt_tree_crown_area = nrow(trees)*sum((crown_area - mean(crown_area))^4)/(sum((crown_area- mean(crown_area))^2)^2),
+                 skew_tree_crown_area = (sum((crown_area - mean(crown_area, na.rm = T))^3, na.rm = T)/nrow(trees))/(sum((crown_area - mean(crown_area, na.rm = T))^2, na.rm = T)/nrow(trees))^(3/2),
+                 kurt_tree_crown_area = nrow(trees)*sum((crown_area - mean(crown_area, na.rm = T))^4, na.rm = T)/(sum((crown_area - mean(crown_area, na.rm = T))^2, na.rm = T)^2),
                  L1_tree_crown_area = Lmoments::Lmoments(crown_area)[1],
                  L2_tree_crown_area =Lmoments::Lmoments(crown_area)[2],
                  L3_tree_crown_area =Lmoments::Lmoments(crown_area)[3],
@@ -286,6 +283,7 @@ vox_mt <- function(z, i)
 #' @export
 #' @examples
 #' std_voxel()
+
 
 std_voxel <- function(las, resolution, sf_poly){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
@@ -354,8 +352,8 @@ std_voxel <- function(las, resolution, sf_poly){
 
   ### I_Di is the median intensity of returns above each voxel
   # calculate median intensity above each voxel
-i_above <- lapply(unique_Z, function(x) {
-    i_a <- fullvox %>% filter(Z > x)
+  i_above <- lapply(unique_Z, function(x) {
+    i_a <- fullvox %>% filter(Z > 5)
     if(nrow(i_a) == 0){
       fullvox %>% group_by(X,Y) %>% summarize(Z = x, i_Di = NA)
       } else{
@@ -368,8 +366,6 @@ i_above <- lapply(unique_Z, function(x) {
       }
   }
   )
-
-med_z_vox <- fullvox$med_z_vox
 
 
   # extract point below data and merge using the voxel id
@@ -412,14 +408,14 @@ med_z_vox <- fullvox$med_z_vox
                                       z_sd_IQR = IQR(sd_z_vox, na.rm = T),
                                       z_sd_skew =(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
                                       z_sd_kurt = nrow(vox)*sum((sd_z_vox- mean(sd_z_vox, na.rm = T))^4, na.rm = T)/(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^2, na.rm = T)^2),
-                                      z_cv_med = median(cv_z_vox, na.rm = T),
-                                      z_cv_mean = mean(cv_z_vox, na.rm = T),
-                                      z_cv_var = var(cv_z_vox, na.rm = T),
-                                      z_cv_sd = sd(cv_z_vox, na.rm = T),
-                                      z_cv_cv = sd(cv_z_vox, na.rm = T)/mean(cv_z_vox, na.rm = T),
-                                      z_cv_IQR = IQR(cv_z_vox, na.rm = T),
-                                      z_cv_skew = (sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
-                                      z_cv_kurt = nrow(vox)*sum((cv_z_vox- mean(cv_z_vox, na.rm = T))^4, na.rm = T)/(sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^2, na.rm = T)^2),
+                                      z_cv_med = median(cv_z_vox[is.finite(cv_z_vox)], na.rm = T),
+                                      z_cv_mean = mean(cv_z_vox[is.finite(cv_z_vox)], na.rm = T),
+                                      z_cv_var = var(cv_z_vox[is.finite(cv_z_vox)], na.rm = T),
+                                      z_cv_sd = sd(cv_z_vox[is.finite(cv_z_vox)], na.rm = T),
+                                      z_cv_cv = sd(cv_z_vox[is.finite(cv_z_vox)], na.rm = T)/mean(cv_z_vox[is.finite(cv_z_vox)], na.rm = T),
+                                      z_cv_IQR = IQR(cv_z_vox[is.finite(cv_z_vox)], na.rm = T),
+                                      z_cv_skew = (sum((cv_z_vox[is.finite(cv_z_vox)] - mean(cv_z_vox[is.finite(cv_z_vox)], na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((cv_z_vox[is.finite(cv_z_vox)] - mean(cv_z_vox[is.finite(cv_z_vox)], na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_cv_kurt = nrow(vox)*sum((cv_z_vox[is.finite(cv_z_vox)]- mean(cv_z_vox[is.finite(cv_z_vox)], na.rm = T))^4, na.rm = T)/(sum((cv_z_vox[is.finite(cv_z_vox)] - mean(cv_z_vox[is.finite(cv_z_vox)], na.rm = T))^2, na.rm = T)^2),
                                       z_IQR_med = median(IQR_z_vox, na.rm = T),
                                       z_IQR_mean = mean(IQR_z_vox, na.rm = T),
                                       z_IQR_var = var(IQR_z_vox, na.rm = T),
@@ -545,7 +541,7 @@ med_z_vox <- fullvox$med_z_vox
 
   )
 
-  ## summarize by hieght bins
+  ## summarize by height bins
 
   ### SVM_med is the median height of all points within maximum density subvoxel (i.e., voxel) or each X,Y
 
@@ -604,8 +600,8 @@ med_z_vox <- fullvox$med_z_vox
   p <-  p %>% mutate(pln = p0*log(p0))
   p <- p %>% mutate(p2 = p0^2)
   ENL_d0 <- sum(p$p0^0)
-  ENL_d1 <- exp(-sum(p$pln)) ## exponential Shannon-Index
-  ENL_d2 <- 1/sum(p$p2) ## inverse Simpson-Index
+  ENL_d1 <- exp(-sum(p$pln, na.rm = T)) ## exponential Shannon-Index
+  ENL_d2 <- 1/sum(p$p2, na.rm = T) ## inverse Simpson-Index
 
   # add indicies to voxel_summ df
   voxel_summ <- cbind(voxel_summ, ENL_d0, ENL_d1, ENL_d2)
@@ -659,7 +655,7 @@ med_z_vox <- fullvox$med_z_vox
   ### of height bins within a given las based on Shannon diversity index
   ht_bin <- c(.5,1,2,3,4,5)
   vci_list <- lapply(ht_bin, function(x) {
-    VCI <- lidR::VCI(las@data$Z, max(las@data$Z), by =  x)
+    VCI <- lidR::VCI(las@data$Z[las@data$Z>=1], max(las@data$Z), by =  x)
     })
   names(vci_list) <- paste0("vci_bin", ht_bin)
   vci_all <- t(as.data.frame(do.call(rbind,vci_list))[1])

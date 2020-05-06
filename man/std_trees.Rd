@@ -12,11 +12,6 @@ std_trees(trees)
 \description{
 This function takes the output from tree_metrics() in lidR and creates area based summaries from the segmented trees.
 }
-\examples{
-trees <- lastrees(las.t, watershed(chm))
-trees <- tree_metrics(trees, func = .stdtreemetrics )
-tree_stats <- std_trees(trees)
-}
 \keyword{lidar}
 \keyword{metrics}
 \keyword{tree}

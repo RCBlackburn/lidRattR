@@ -281,12 +281,17 @@ vox_mt <- function(z, i)
 #' @param sf_poly sf polygon to clip voxels to. Required.
 #' different height bins in Pearse et al. 2019.
 #' @keywords lidar voxel metrics
-#' @import tidyr
-#' @import dplyr
 #' @import data.table
+#' @import dplyr
+#' @import
 #' @export
 #' @examples
 #' std_voxel()
+
+
+las <- med
+sf_poly <- med.poly
+resolution = 1
 
 std_voxel <- function(las, resolution, sf_poly){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z, as.numeric(Intensity)), res = resolution)
@@ -303,7 +308,10 @@ std_voxel <- function(las, resolution, sf_poly){
 
   fullvox.df <- as.data.frame(fullvox)
   full_vox.sf <- st_as_sf(fullvox.df, coords = c('X', 'Y'), crs = st_crs(sf_poly))
+  st_agr(sf_poly) = "constant"
+  st_agr(full_vox.sf) = "constant"
   fullvox.crop <- st_intersection(sf_poly, full_vox.sf)
+
   fullvox <- cbind(X = st_coordinates(fullvox.crop)[,1], Y = st_coordinates(fullvox.crop)[,2],
                    fullvox.crop[,c(which(colnames(fullvox.crop) =="Z"):ncol(fullvox.crop))])
   fullvox <- as.data.frame(fullvox)
@@ -367,10 +375,14 @@ i_above <- lapply(unique_Z, function(x) {
   }
   )
 
+med_z_vox <- fullvox$med_z_vox
+
+
   # extract point below data and merge using the voxel id
   i_above_all_vox <- do.call(rbind,i_above)
   i_above_all_vox <- i_above_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
   fullvox <- fullvox %>% left_join(as.data.frame(i_above_all_vox[,c(4,5)]), by = "id_xyz" )
+
 
   ##### Summarized voxel metrics
   ### Start by summarizing individual voxel metrics
@@ -380,160 +392,160 @@ i_above <- lapply(unique_Z, function(x) {
                                       z_med_sd = sd(med_z_vox, na.rm = T),
                                       z_med_cv = sd(med_z_vox, na.rm = T)/mean(med_z_vox, na.rm = T),
                                       z_med_IQR = IQR(med_z_vox, na.rm = T),
-                                      z_med_skew = (sum((med_z_vox - mean(med_z_vox, na.rm = T))^3)/nrow(vox))/(sum((med_z_vox - mean(med_z_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      z_med_kurt = nrow(vox)*sum((med_z_vox- mean(med_z_vox, na.rm = T))^4)/(sum((med_z_vox - mean(med_z_vox, na.rm = T))^2)^2),
+                                      z_med_skew = (sum((med_z_vox - mean(med_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((med_z_vox - mean(med_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_med_kurt = nrow(vox)*sum((med_z_vox- mean(med_z_vox, na.rm = T))^4, na.rm = T)/(sum((med_z_vox - mean(med_z_vox, na.rm = T))^2, na.rm = T)^2),
                                       z_mean_med = median(mean_z_vox, na.rm = T),
                                       z_mean_mean = mean(mean_z_vox, na.rm = T),
                                       z_mean_var = var(mean_z_vox, na.rm = T),
                                       z_mean_sd = sd(mean_z_vox, na.rm = T),
                                       z_mean_cv = sd(mean_z_vox, na.rm = T)/mean(mean_z_vox, na.rm = T),
                                       z_mean_IQR = IQR(mean_z_vox, na.rm = T),
-                                      z_mean_skew = (sum((mean_z_vox - mean(mean_z_vox, na.rm = T))^3)/nrow(vox))/(sum((mean_z_vox - mean(mean_z_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      z_mean_kurt = nrow(vox)*sum((mean_z_vox- mean(mean_z_vox, na.rm = T))^4)/(sum((mean_z_vox - mean(mean_z_vox, na.rm = T))^2)^2),
+                                      z_mean_skew = (sum((mean_z_vox - mean(mean_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((mean_z_vox - mean(mean_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_mean_kurt = nrow(vox)*sum((mean_z_vox- mean(mean_z_vox, na.rm = T))^4, na.rm = T)/(sum((mean_z_vox - mean(mean_z_vox, na.rm = T))^2, na.rm = T)^2),
                                       z_var_med = median(var_z_vox, na.rm = T),
                                       z_var_mean = mean(var_z_vox, na.rm = T),
                                       z_var_var = var(var_z_vox, na.rm = T),
                                       z_var_sd = sd(var_z_vox, na.rm = T),
                                       z_var_cv = sd(var_z_vox, na.rm = T)/mean(var_z_vox, na.rm = T),
                                       z_var_IQR = IQR(var_z_vox, na.rm = T),
-                                      z_var_skew = (sum((var_z_vox - mean(var_z_vox, na.rm = T))^3)/nrow(vox))/(sum((var_z_vox - mean(var_z_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      z_var_kurt = nrow(vox)*sum((var_z_vox- mean(var_z_vox, na.rm = T))^4)/(sum((var_z_vox - mean(var_z_vox, na.rm = T))^2)^2),
+                                      z_var_skew = (sum((var_z_vox - mean(var_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((var_z_vox - mean(var_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_var_kurt = nrow(vox)*sum((var_z_vox- mean(var_z_vox, na.rm = T))^4, na.rm = T)/(sum((var_z_vox - mean(var_z_vox, na.rm = T))^2, na.rm = T)^2),
                                       z_sd_med = median(sd_z_vox, na.rm = T),
                                       z_sd_mean = mean(sd_z_vox, na.rm = T),
                                       z_sd_var = var(sd_z_vox, na.rm = T),
                                       z_sd_sd = sd(sd_z_vox, na.rm = T),
                                       z_sd_cv = sd(sd_z_vox, na.rm = T)/mean(sd_z_vox, na.rm = T),
                                       z_sd_IQR = IQR(sd_z_vox, na.rm = T),
-                                      z_sd_skew =(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^3)/nrow(vox))/(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      z_sd_kurt = nrow(vox)*sum((sd_z_vox- mean(sd_z_vox, na.rm = T))^4)/(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^2)^2),
+                                      z_sd_skew =(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_sd_kurt = nrow(vox)*sum((sd_z_vox- mean(sd_z_vox, na.rm = T))^4, na.rm = T)/(sum((sd_z_vox - mean(sd_z_vox, na.rm = T))^2, na.rm = T)^2),
                                       z_cv_med = median(cv_z_vox, na.rm = T),
                                       z_cv_mean = mean(cv_z_vox, na.rm = T),
                                       z_cv_var = var(cv_z_vox, na.rm = T),
                                       z_cv_sd = sd(cv_z_vox, na.rm = T),
                                       z_cv_cv = sd(cv_z_vox, na.rm = T)/mean(cv_z_vox, na.rm = T),
                                       z_cv_IQR = IQR(cv_z_vox, na.rm = T),
-                                      z_cv_skew = (sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^3)/nrow(vox))/(sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      z_cv_kurt = nrow(vox)*sum((cv_z_vox- mean(cv_z_vox, na.rm = T))^4)/(sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^2)^2),
+                                      z_cv_skew = (sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_cv_kurt = nrow(vox)*sum((cv_z_vox- mean(cv_z_vox, na.rm = T))^4, na.rm = T)/(sum((cv_z_vox - mean(cv_z_vox, na.rm = T))^2, na.rm = T)^2),
                                       z_IQR_med = median(IQR_z_vox, na.rm = T),
                                       z_IQR_mean = mean(IQR_z_vox, na.rm = T),
                                       z_IQR_var = var(IQR_z_vox, na.rm = T),
                                       z_IQR_sd = sd(IQR_z_vox, na.rm = T),
                                       z_IQR_cv = sd(IQR_z_vox, na.rm = T)/mean(IQR_z_vox, na.rm = T),
                                       z_IQR_IQR = IQR(IQR_z_vox, na.rm = T),
-                                      z_IQR_skew =(sum((IQR_z_vox - mean(IQR_z_vox, na.rm = T))^3)/nrow(vox))/(sum((IQR_z_vox - mean(IQR_z_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      z_IQR_kurt = nrow(vox)*sum((IQR_z_vox- mean(IQR_z_vox, na.rm = T))^4)/(sum((IQR_z_vox - mean(IQR_z_vox, na.rm = T))^2)^2),
+                                      z_IQR_skew =(sum((IQR_z_vox - mean(IQR_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((IQR_z_vox - mean(IQR_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_IQR_kurt = nrow(vox)*sum((IQR_z_vox- mean(IQR_z_vox, na.rm = T))^4, na.rm = T)/(sum((IQR_z_vox - mean(IQR_z_vox, na.rm = T))^2, na.rm = T)^2),
                                       z_skew_med = median(skew_z_vox, na.rm = T),
                                       z_skew_mean = mean(skew_z_vox, na.rm = T),
                                       z_skew_var = var(skew_z_vox, na.rm = T),
                                       z_skew_sd = sd(skew_z_vox, na.rm = T),
                                       z_skew_cv = sd(skew_z_vox, na.rm = T)/mean(skew_z_vox, na.rm = T),
                                       z_skew_IQR = IQR(skew_z_vox, na.rm = T),
-                                      z_skew_skew = (sum((skew_z_vox - mean(skew_z_vox, na.rm = T))^3)/nrow(vox))/(sum((skew_z_vox - mean(skew_z_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      z_skew_kurt = nrow(vox)*sum((skew_z_vox- mean(skew_z_vox, na.rm = T))^4)/(sum((skew_z_vox - mean(skew_z_vox, na.rm = T))^2)^2),
+                                      z_skew_skew = (sum((skew_z_vox - mean(skew_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((skew_z_vox - mean(skew_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_skew_kurt = nrow(vox)*sum((skew_z_vox- mean(skew_z_vox, na.rm = T))^4, na.rm = T)/(sum((skew_z_vox - mean(skew_z_vox, na.rm = T))^2, na.rm = T)^2),
                                       z_kurt_med = median(kurt_z_vox, na.rm = T),
                                       z_kurt_mean = mean(kurt_z_vox, na.rm = T),
                                       z_kurt_var = var(kurt_z_vox, na.rm = T),
                                       z_kurt_sd = sd(kurt_z_vox, na.rm = T),
                                       z_kurt_cv = sd(kurt_z_vox, na.rm = T)/mean(kurt_z_vox, na.rm = T),
                                       z_kurt_IQR = IQR(kurt_z_vox, na.rm = T),
-                                      z_kurt_skew = (sum((kurt_z_vox - mean(kurt_z_vox, na.rm = T))^3)/nrow(vox))/(sum((kurt_z_vox - mean(kurt_z_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      z_kurt_kurt = nrow(vox)*sum((kurt_z_vox- mean(kurt_z_vox, na.rm = T))^4)/(sum((kurt_z_vox - mean(kurt_z_vox, na.rm = T))^2)^2),
+                                      z_kurt_skew = (sum((kurt_z_vox - mean(kurt_z_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((kurt_z_vox - mean(kurt_z_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      z_kurt_kurt = nrow(vox)*sum((kurt_z_vox- mean(kurt_z_vox, na.rm = T))^4, na.rm = T)/(sum((kurt_z_vox - mean(kurt_z_vox, na.rm = T))^2, na.rm = T)^2),
                                       i_vox_med = median(med_i_vox, na.rm = T),
                                       i_med_mean = mean(med_i_vox, na.rm = T),
                                       i_med_var = var(med_i_vox, na.rm = T),
                                       i_med_sd = sd(med_i_vox, na.rm = T),
                                       i_med_cv = sd(med_i_vox, na.rm = T)/mean(med_i_vox, na.rm = T),
                                       i_med_IQR = IQR(med_i_vox, na.rm = T),
-                                      i_med_skew = (sum((med_i_vox - mean(med_i_vox, na.rm = T))^3)/nrow(vox))/(sum((med_i_vox - mean(med_i_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      i_med_kurt = nrow(vox)*sum((med_i_vox- mean(med_i_vox, na.rm = T))^4)/(sum((med_i_vox - mean(med_i_vox, na.rm = T))^2)^2),
+                                      i_med_skew = (sum((med_i_vox - mean(med_i_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((med_i_vox - mean(med_i_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_med_kurt = nrow(vox)*sum((med_i_vox- mean(med_i_vox, na.rm = T))^4, na.rm = T)/(sum((med_i_vox - mean(med_i_vox, na.rm = T))^2, na.rm = T)^2),
                                       i_mean_med = median(mean_i_vox, na.rm = T),
                                       i_mean_mean = mean(mean_i_vox, na.rm = T),
                                       i_mean_var = var(mean_i_vox, na.rm = T),
                                       i_mean_sd = sd(mean_i_vox, na.rm = T),
                                       i_mean_cv = sd(mean_i_vox, na.rm = T)/mean(mean_i_vox, na.rm = T),
                                       i_mean_IQR = IQR(mean_i_vox, na.rm = T),
-                                      i_mean_skew =  (sum((mean_i_vox - mean(mean_i_vox, na.rm = T))^3)/nrow(vox))/(sum((mean_i_vox - mean(mean_i_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      i_mean_kurt = nrow(vox)*sum((mean_i_vox- mean(mean_i_vox, na.rm = T))^4)/(sum((mean_i_vox - mean(mean_i_vox, na.rm = T))^2)^2),
+                                      i_mean_skew =  (sum((mean_i_vox - mean(mean_i_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((mean_i_vox - mean(mean_i_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_mean_kurt = nrow(vox)*sum((mean_i_vox- mean(mean_i_vox, na.rm = T))^4, na.rm = T)/(sum((mean_i_vox - mean(mean_i_vox, na.rm = T))^2, na.rm = T)^2),
                                       i_var_med = median(var_i_vox, na.rm = T),
                                       i_var_mean = mean(var_i_vox, na.rm = T),
                                       i_var_var = var(var_i_vox, na.rm = T),
                                       i_var_sd = sd(var_i_vox, na.rm = T),
                                       i_var_cv = sd(var_i_vox, na.rm = T)/mean(var_i_vox, na.rm = T),
                                       i_var_IQR = IQR(var_i_vox, na.rm = T),
-                                      i_var_skew =  (sum((var_i_vox - mean(var_i_vox, na.rm = T))^3)/nrow(vox))/(sum((var_i_vox - mean(var_i_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      i_var_kurt = nrow(vox)*sum((var_i_vox- mean(var_i_vox, na.rm = T))^4)/(sum((var_i_vox - mean(var_i_vox, na.rm = T))^2)^2),
+                                      i_var_skew =  (sum((var_i_vox - mean(var_i_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((var_i_vox - mean(var_i_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_var_kurt = nrow(vox)*sum((var_i_vox- mean(var_i_vox, na.rm = T))^4, na.rm = T)/(sum((var_i_vox - mean(var_i_vox, na.rm = T))^2, na.rm = T)^2),
                                       i_sd_med = median(sd_i_vox, na.rm = T),
                                       i_sd_mean = mean(sd_i_vox, na.rm = T),
                                       i_sd_var = var(sd_i_vox, na.rm = T),
                                       i_sd_sd = sd(sd_i_vox, na.rm = T),
                                       i_sd_cv = sd(sd_i_vox, na.rm = T)/mean(sd_i_vox, na.rm = T),
                                       i_sd_IQR = IQR(sd_i_vox, na.rm = T),
-                                      i_sd_skew =  (sum((sd_i_vox - mean(sd_i_vox, na.rm = T))^3)/nrow(vox))/(sum((sd_i_vox - mean(sd_i_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      i_sd_kurt = nrow(vox)*sum((sd_i_vox- mean(sd_i_vox, na.rm = T))^4)/(sum((sd_i_vox - mean(sd_i_vox, na.rm = T))^2)^2),
+                                      i_sd_skew =  (sum((sd_i_vox - mean(sd_i_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((sd_i_vox - mean(sd_i_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_sd_kurt = nrow(vox)*sum((sd_i_vox- mean(sd_i_vox, na.rm = T))^4, na.rm = T)/(sum((sd_i_vox - mean(sd_i_vox, na.rm = T))^2, na.rm = T)^2),
                                       i_cv_med = median(cv_i_vox, na.rm = T),
                                       i_cv_mean = mean(cv_i_vox, na.rm = T),
                                       i_cv_var = var(cv_i_vox, na.rm = T),
                                       i_cv_sd = sd(cv_i_vox, na.rm = T),
                                       i_cv_cv = sd(cv_i_vox, na.rm = T)/mean(cv_i_vox, na.rm = T),
                                       i_cv_IQR = IQR(cv_i_vox, na.rm = T),
-                                      i_cv_skew =  (sum((cv_i_vox - mean(cv_i_vox, na.rm = T))^3)/nrow(vox))/(sum((cv_i_vox - mean(cv_i_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      i_cv_kurt = nrow(vox)*sum((cv_i_vox- mean(cv_i_vox, na.rm = T))^4)/(sum((cv_i_vox - mean(cv_i_vox, na.rm = T))^2)^2),
+                                      i_cv_skew =  (sum((cv_i_vox - mean(cv_i_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((cv_i_vox - mean(cv_i_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_cv_kurt = nrow(vox)*sum((cv_i_vox- mean(cv_i_vox, na.rm = T))^4, na.rm = T)/(sum((cv_i_vox - mean(cv_i_vox, na.rm = T))^2, na.rm = T)^2),
                                       i_IQR_med = median(IQR_i_vox, na.rm = T),
                                       i_IQR_mean = mean(IQR_i_vox, na.rm = T),
                                       i_IQR_var = var(IQR_i_vox, na.rm = T),
                                       i_IQR_sd = sd(IQR_i_vox, na.rm = T),
                                       i_IQR_cv = sd(IQR_i_vox, na.rm = T)/mean(IQR_i_vox, na.rm = T),
                                       i_IQR_IQR = IQR(IQR_i_vox, na.rm = T),
-                                      i_IQR_skew =  (sum((IQR_i_vox - mean(IQR_i_vox, na.rm = T))^3)/nrow(vox))/(sum((IQR_i_vox - mean(IQR_i_vox, na.rm = T))^2)/nrow(IQR_i_vox))^(3/2),
-                                      i_IQR_kurt = nrow(vox)*sum((IQR_i_vox- mean(IQR_i_vox, na.rm = T))^4)/(sum((IQR_i_vox - mean(IQR_i_vox, na.rm = T))^2)^2),
+                                      i_IQR_skew =  (sum((IQR_i_vox - mean(IQR_i_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((IQR_i_vox - mean(IQR_i_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_IQR_kurt = nrow(vox)*sum((IQR_i_vox- mean(IQR_i_vox, na.rm = T))^4, na.rm = T)/(sum((IQR_i_vox - mean(IQR_i_vox, na.rm = T))^2, na.rm = T)^2),
                                       i_skew_med = median(skew_i_vox, na.rm = T),
                                       i_skew_mean = mean(skew_i_vox, na.rm = T),
                                       i_skew_var = var(skew_i_vox, na.rm = T),
                                       i_skew_sd = sd(skew_i_vox, na.rm = T),
                                       i_skew_cv = sd(skew_i_vox, na.rm = T)/mean(skew_i_vox, na.rm = T),
                                       i_skew_IQR = IQR(skew_i_vox, na.rm = T),
-                                      i_skew_skew =  (sum((skew_i_vox - mean(skew_i_vox, na.rm = T))^3)/nrow(vox))/(sum((skew_i_vox - mean(skew_i_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      i_skew_kurt = nrow(vox)*sum((skew_i_vox- mean(skew_i_vox, na.rm = T))^4)/(sum((skew_i_vox - mean(skew_i_vox, na.rm = T))^2)^2),
+                                      i_skew_skew =  (sum((skew_i_vox - mean(skew_i_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((skew_i_vox - mean(skew_i_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_skew_kurt = nrow(vox)*sum((skew_i_vox- mean(skew_i_vox, na.rm = T))^4, na.rm = T)/(sum((skew_i_vox - mean(skew_i_vox, na.rm = T))^2, na.rm = T)^2),
                                       i_kurt_med = median(kurt_i_vox, na.rm = T),
                                       i_kurt_mean = mean(kurt_i_vox, na.rm = T),
                                       i_kurt_var = var(kurt_i_vox, na.rm = T),
                                       i_kurt_sd = sd(kurt_i_vox, na.rm = T),
                                       i_kurt_cv = sd(kurt_i_vox, na.rm = T)/mean(kurt_i_vox, na.rm = T),
                                       i_kurt_IQR = IQR(kurt_i_vox, na.rm = T),
-                                      i_kurt_skew =  (sum((kurt_i_vox - mean(kurt_i_vox, na.rm = T))^3)/nrow(vox))/(sum((kurt_i_vox - mean(kurt_i_vox, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      i_kurt_kurt = nrow(vox)*sum((kurt_i_vox- mean(kurt_i_vox, na.rm = T))^4)/(sum((kurt_i_vox - mean(kurt_i_vox, na.rm = T))^2)^2),
+                                      i_kurt_skew =  (sum((kurt_i_vox - mean(kurt_i_vox, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((kurt_i_vox - mean(kurt_i_vox, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_kurt_kurt = nrow(vox)*sum((kurt_i_vox- mean(kurt_i_vox, na.rm = T))^4, na.rm = T)/(sum((kurt_i_vox - mean(kurt_i_vox, na.rm = T))^2, na.rm = T)^2),
                                       P_Di_med = median(npoints_below, na.rm = T),
                                       P_Di_mean = mean(npoints_below, na.rm = T),
                                       P_Di_var = var(npoints_below, na.rm = T),
                                       P_Di_sd = sd(npoints_below, na.rm = T),
                                       P_Di_cv = sd(npoints_below, na.rm = T)/mean(npoints_below, na.rm = T),
                                       P_Di_IQR = IQR(npoints_below, na.rm = T),
-                                      P_Di_skew =  (sum((npoints_below - mean(npoints_below, na.rm = T))^3)/nrow(vox))/(sum((npoints_below - mean(npoints_below, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      P_Di_kurt = nrow(vox)*sum((npoints_below- mean(npoints_below, na.rm = T))^4)/(sum((npoints_below - mean(npoints_below, na.rm = T))^2)^2),
+                                      P_Di_skew =  (sum((npoints_below - mean(npoints_below, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((npoints_below - mean(npoints_below, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      P_Di_kurt = nrow(vox)*sum((npoints_below- mean(npoints_below, na.rm = T))^4, na.rm = T)/(sum((npoints_below - mean(npoints_below, na.rm = T))^2, na.rm = T)^2),
                                       npoints_above_med = median(npoints_above, na.rm = T),
                                       npoints_above_mean = mean(npoints_above, na.rm = T),
                                       npoints_above_var = var(npoints_above, na.rm = T),
                                       npoints_above_sd = sd(npoints_above, na.rm = T),
                                       npoints_above_cv = sd(npoints_above, na.rm = T)/mean(npoints_above, na.rm = T),
                                       npoints_above_IQR = IQR(npoints_above, na.rm = T),
-                                      npoints_above_skew =  (sum((npoints_above - mean(npoints_above, na.rm = T))^3)/nrow(vox))/(sum((npoints_above - mean(npoints_above, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      npoints_above_kurt = nrow(vox)*sum((npoints_above- mean(npoints_above, na.rm = T))^4)/(sum((npoints_above - mean(npoints_above, na.rm = T))^2)^2),
+                                      npoints_above_skew =  (sum((npoints_above - mean(npoints_above, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((npoints_above - mean(npoints_above, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      npoints_above_kurt = nrow(vox)*sum((npoints_above- mean(npoints_above, na.rm = T))^4, na.rm = T)/(sum((npoints_above - mean(npoints_above, na.rm = T))^2, na.rm = T)^2),
                                       FR_Di_med = median(FR_Di, na.rm = T),
                                       FR_Di_mean = mean(FR_Di, na.rm = T),
                                       FR_Di_var = var(FR_Di, na.rm = T),
                                       FR_Di_sd = sd(FR_Di, na.rm = T),
                                       FR_Di_cv = sd(FR_Di, na.rm = T)/mean(FR_Di, na.rm = T),
                                       FR_Di_IQR = IQR(FR_Di, na.rm = T),
-                                      FR_Di_skew =  (sum((FR_Di - mean(FR_Di, na.rm = T))^3)/nrow(vox))/(sum((FR_Di - mean(FR_Di, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      FR_Di_kurt = nrow(vox)*sum((FR_Di- mean(FR_Di, na.rm = T))^4)/(sum((FR_Di - mean(FR_Di, na.rm = T))^2)^2),
+                                      FR_Di_skew =  (sum((FR_Di - mean(FR_Di, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((FR_Di - mean(FR_Di, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      FR_Di_kurt = nrow(vox)*sum((FR_Di- mean(FR_Di, na.rm = T))^4, na.rm = T)/(sum((FR_Di - mean(FR_Di, na.rm = T))^2, na.rm = T)^2),
                                       i_Di_med = median(i_Di, na.rm = T),
                                       i_Di_mean = mean(i_Di, na.rm = T),
                                       i_Di_var = var(i_Di, na.rm = T),
                                       i_Di_sd = sd(i_Di, na.rm = T),
                                       i_Di_cv = sd(i_Di, na.rm = T)/mean(i_Di, na.rm = T),
                                       i_Di_IQR = IQR(i_Di, na.rm = T),
-                                      i_Di_skew =  (sum((i_Di - mean(i_Di, na.rm = T))^3)/nrow(vox))/(sum((i_Di - mean(i_Di, na.rm = T))^2)/nrow(vox))^(3/2),
-                                      i_Di_kurt = nrow(vox)*sum((i_Di- mean(i_Di, na.rm = T))^4)/(sum((i_Di - mean(i_Di, na.rm = T))^2)^2),
+                                      i_Di_skew =  (sum((i_Di - mean(i_Di, na.rm = T))^3,na.rm = T)/nrow(vox))/(sum((i_Di - mean(i_Di, na.rm = T))^2,na.rm = T)/nrow(vox))^(3/2),
+                                      i_Di_kurt = nrow(vox)*sum((i_Di- mean(i_Di, na.rm = T))^4, na.rm = T)/(sum((i_Di - mean(i_Di, na.rm = T))^2, na.rm = T)^2),
                                       pct_fill_vox = nrow(vox) /nrow(fullvox)
 
 
@@ -652,7 +664,7 @@ i_above <- lapply(unique_Z, function(x) {
   ### VCI is a measure of the eveness or simulatiry of point densitys
   ### of height bins within a given las based on Shannon diversity index
   ht_bin <- c(.5,1,2,3,4,5)
-  VCI_list <- lapply(ht_bin, function(x) {
+  vci_list <- lapply(ht_bin, function(x) {
     VCI <- lidR::VCI(las@data$Z, max(las@data$Z), by =  x)
     })
   names(vci_list) <- paste0("vci_bin", ht_bin)

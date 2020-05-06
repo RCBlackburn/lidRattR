@@ -372,9 +372,6 @@ i_above <- lapply(unique_Z, function(x) {
   i_above_all_vox <- i_above_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
   fullvox <- fullvox %>% left_join(as.data.frame(i_above_all_vox[,c(4,5)]), by = "id_xyz" )
 
-  zskew = (sum((z - zmean)^3)/npoints)/(sum((z - zmean)^2)/npoints)^(3/2)
-  zkurt = npoints*sum((z - zmean)^4)/(sum((z - zmean)^2)^2)
-
   ##### Summarized voxel metrics
   ### Start by summarizing individual voxel metrics
   voxel_summ <- fullvox %>% summarise(z_med_med = median(med_z_vox, na.rm = T),

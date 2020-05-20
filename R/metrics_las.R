@@ -616,7 +616,7 @@ std_voxel <- function(las, resolution, sf_plot, max_z){
               SVM_IQR = mean(IQR_Z_above, na.rm = T), SVM_skew = mean(skew_Z_above, na.rm = T),
               SVM_kurt = mean(kurt_Z_above, na.rm = T))
 
-  SVM_summ$SVM_D_med_z <- SVM_all[which(SVM_all$SVM_density == max(SVM_all$SVM_density)[1]),]$median_Z
+  SVM_summ$SVM_D_med_z <- max(SVM_all[which(SVM_all$SVM_density == max(SVM_all$SVM_density)),]$median_Z, na.rm = T)[1]
   voxel_summ <- cbind(voxel_summ, SVM_summ)
 
 

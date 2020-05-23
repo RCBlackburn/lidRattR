@@ -4,7 +4,7 @@
 \alias{std_voxel}
 \title{Standard voxel metrics function}
 \usage{
-std_voxel(las, resolution, sf_plot, max_z)
+std_voxel(las, resolution, sf_plot, plot_size, max_z)
 }
 \arguments{
 \item{las}{an las file (made for small, 0.01 ha, areas)}
@@ -21,6 +21,7 @@ additional summary statistics for height and intensity values within each voxel
 }
 \examples{
 std_voxel()
+
 }
 \keyword{lidar}
 \keyword{metrics}

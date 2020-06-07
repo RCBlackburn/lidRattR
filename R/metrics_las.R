@@ -284,6 +284,7 @@ vox_mt <- function(z, i)
 #' @examples
 #' std_voxel()
 #'
+#
 
 std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
 
@@ -313,7 +314,6 @@ std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
 
   # give each voxel a unique id and assign 0s and NAs where appropriate
   fullvox <- fullvox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
-  fullvox <- fullvox %>% mutate(id_vox = seq(1:nrow(fullvox)))
   fullvox$SVi[is.na(fullvox$SVi)] <- 0
   null_list <- lapply(fullvox$Z_list,is.null)
   fullvox$Z_list[do.call(rbind,null_list)] <- NA
@@ -331,9 +331,9 @@ std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
 
   # calculate points below each voxel
   point_blow <- lapply(unique_Z, function(x) fullvox %>%
-           group_by(X,Y) %>%
-           filter(Z < x) %>%
-           summarize(npoints_below = sum(SVi), Z= x))
+                         group_by(X,Y) %>%
+                         filter(Z < x) %>%
+                         summarize(npoints_below = sum(SVi), Z= x))
 
   # extract point below data and merge using the voxel id
   point_blow_all_vox <- do.call(rbind,point_blow)
@@ -345,9 +345,9 @@ std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
   ### P_Di_above is the number of returns above each voxel (Kim et al. 2016 uses returns above as P_Di)
   # calculate points below each voxel
   point_above <- lapply(unique_Z, function(x) fullvox %>%
-           group_by(X,Y) %>%
-           filter(Z > x) %>%
-           summarize(npoints_above = sum(SVi,na.rm = T), Z= x))
+                          group_by(X,Y) %>%
+                          filter(Z > x) %>%
+                          summarize(npoints_above = sum(SVi,na.rm = T), Z= x))
   # extract point below data and merge using the voxel id
   point_above_all_vox <- do.call(rbind,point_above)
   point_above_all_vox <- point_above_all_vox %>% mutate(id_xyz = paste0(X,"-",Y,"-",Z))
@@ -361,19 +361,21 @@ std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
   ### I_Di is the median intensity of returns above each voxel
   # calculate median intensity above each voxel
   i_above <- lapply(unique_Z, function(x) {
-    i_a <- fullvox %>% filter(Z > 5)
+    # i_a <- fullvox %>% filter(Z > 5)
+    i_a <- fullvox
     if(nrow(i_a) == 0){
       fullvox %>% group_by(X,Y) %>% summarize(Z = x, i_Di = NA)
-      } else{
-    i_abv <- data.table::as.data.table(do.call(rbind, i_a$I_list))
-    i_a_merge <- cbind(data.table::as.data.table(i_a[1:2]), i_abv)
-    i_Di_mt <- i_a_merge %>% data.table::melt(id = c("X","Y")) %>%
-      group_by(X,Y) %>%
-      summarize(Z = x, i_Di = median(value, na.rm = T))
+    } else{
+      i_abv <- data.table::as.data.table(do.call(rbind, i_a$I_list))
+      i_a_merge <- cbind(data.table::as.data.table(i_a[1:2]), i_abv)
+      i_Di_mt <- i_a_merge %>% data.table::melt(id = c("X","Y")) %>%
+        group_by(X,Y) %>%
+        summarize(Z = x, i_Di = median(value, na.rm = T))
 
-      }
+    }
   }
   )
+
 
 
   # extract point below data and merge using the voxel id
@@ -567,14 +569,14 @@ std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
     hts_above <- as.numeric(do.call(cbind,vox_above$Z_list))
     SVM_all_mts <- data.frame(SVM_med = median(hts_above, na.rm = T))
     SVM_all_mts <- as.data.frame(cbind(X = x["X"], Y = x["Y"], Z = x["Z"],
-                         median_Z_above = median(hts_above, na.rm = T),
-                         mean_Z_above = mean(hts_above, na.rm = T),
-                         sd_Z_above = sd(hts_above, na.rm = T),
-                         var_Z_above = sd(hts_above, na.rm = T)^2,
-                         cv_Z_above = sd(hts_above, na.rm = T)/ mean(hts_above, na.rm = T),
-                         IQR_Z_above = IQR(hts_above, na.rm = T),
-                         skew_Z_above = e1071::skewness(hts_above, na.rm = T),
-                         kurt_Z_above = e1071::kurtosis(hts_above, na.rm = T)))
+                                       median_Z_above = median(hts_above, na.rm = T),
+                                       mean_Z_above = mean(hts_above, na.rm = T),
+                                       sd_Z_above = sd(hts_above, na.rm = T),
+                                       var_Z_above = sd(hts_above, na.rm = T)^2,
+                                       cv_Z_above = sd(hts_above, na.rm = T)/ mean(hts_above, na.rm = T),
+                                       IQR_Z_above = IQR(hts_above, na.rm = T),
+                                       skew_Z_above = e1071::skewness(hts_above, na.rm = T),
+                                       kurt_Z_above = e1071::kurtosis(hts_above, na.rm = T)))
   }
   )
 
@@ -648,19 +650,19 @@ std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
       group_by(X,Y) %>%
       summarize(pt_density = sum(SVi))
     if(nrow(point_density) == 0) {return(NULL)} else{
-    point_density$pcc <- point_density$pt_density/ npoints_XY$npoints
-    point_density$ht_bin <- x
-    return(point_density)
+      point_density$pcc <- point_density$pt_density/ npoints_XY$npoints
+      point_density$ht_bin <- x
+      return(point_density)
     }
   } )
 
   pcc_bins <- do.call(rbind, pcc_list)
   if(is.null(pcc_bins)){pcc <- NA} else{
-  pcc_bins$pcc[is.na(pcc_bins$pcc)] <- 0
-  pcc_bins <- as.data.frame(pcc_bins)
-  pcc_XY <- pcc_bins %>% group_by(X,Y) %>% summarise(pcc = sum(pcc))
+    pcc_bins$pcc[is.na(pcc_bins$pcc)] <- 0
+    pcc_bins <- as.data.frame(pcc_bins)
+    pcc_XY <- pcc_bins %>% group_by(X,Y) %>% summarise(pcc = sum(pcc))
 
-  pcc <- mean(pcc_XY$pcc)}
+    pcc <- mean(pcc_XY$pcc)}
 
   voxel_summ <- cbind(voxel_summ, pcc = pcc)
 
@@ -669,9 +671,10 @@ std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
   ht_bin <- c(.5,1,2,3,4,5)
   vci_list <- lapply(ht_bin, function(x) {
     VCI <- lidR::VCI(las@data$Z[las@data$Z>=1], max(las@data$Z), by =  x)
-    })
+  })
   names(vci_list) <- paste0("vci_bin", ht_bin)
   vci_all <- t(as.data.frame(do.call(rbind,vci_list))[1])
+  vci_all[is.na(vci_all)] <- 0
   voxel_summ <- cbind(voxel_summ, vci_all)
   return(voxel_summ)
 }

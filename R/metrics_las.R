@@ -68,6 +68,7 @@ std_cloud <- function(x, y, z, i, ReturnNumber)
     d = as.list(d[1:9])
   }
   names(d) = paste0("decile", 1:9)
+  d[is.na(d)] <- 0
   dcum = cumsum(d)
   names(dcum) = paste0("dcum", 1:9)
   # canopy related metrics

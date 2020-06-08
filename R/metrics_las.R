@@ -362,7 +362,7 @@ std_voxel <- function(las, resolution, sf_plot, plot_size, max_z){
   # calculate median intensity above each voxel
   i_above <- lapply(unique_Z, function(x) {
     # i_a <- fullvox %>% filter(Z > 5)
-    i_a <- fullvox
+    i_a <- fullvox %>% filter( Z > x)
     if(nrow(i_a) == 0){
       fullvox %>% group_by(X,Y) %>% summarize(Z = x, i_Di = NA)
     } else{

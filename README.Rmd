@@ -6,14 +6,13 @@ output: html_document
 ```{r setup, include=FALSE}
 library(lidR)
 library(rgl)
-knitr::knit_hooks$set(webgl = hook_webgl)
 ```
 
 #### A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles using three lidR techniques
 
 ### Cloud-based technique
 
-```{r, echo = FALSE, webgl = TRUE}
+```{r, echo = FALSE}
 las <- readLAS("viz/viz.las")
 next3d()
 plot(las, colorPalette = viridis::magma(n = 50), bg = "white", size = 3, axis = T)

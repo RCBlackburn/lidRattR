@@ -4,21 +4,24 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-library(lidR)
-library(rgl)
+
 ```
 
 #### A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles using three lidR techniques
 
 ### Cloud-based technique
 
-```{r, echo = FALSE}
-las <- readLAS("viz/viz.las")
+![](viz/cloud.gif)
 
-plot(las, colorPalette = viridis::magma(n = 50), bg = "white", size = 3, axis = T)
-cy.mat <-  cbind(11.34, 11.34, 1.37:25)
-cy.mat.p <-  cbind(11.34, 11.34, 15:25)
-shade3d(cylinder3d(cy.mat , radius = 11.34, side = 100),col="#B63679FF", alpha = .2)
-grid3d(c("x", "y+", "z"))
 
-```
+### Tree-based technique
+
+![](viz/tree.gif)
+
+### Voxel-based technique
+
+
+![](viz/voxel.gif)
+
+
+

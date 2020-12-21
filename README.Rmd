@@ -1,11 +1,10 @@
 ---
 title: "lidRmts"
-output: html_document
+output: 
+  html_document: 
+    fig_width: 4
+    fig_height: 2
 ---
-
-```{r setup, include=FALSE}
-
-```
 
 #### A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles using three lidR techniques
 

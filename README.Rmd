@@ -1,7 +1,5 @@
 ---
 title: "lidRmts"
-output: 
-  html_document: 
 ---
 
 #### A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles using three lidR techniques
@@ -17,8 +15,4 @@ output:
 
 ### Voxel-based technique
 
-
 ![](viz/voxel.gif)
-
-
-

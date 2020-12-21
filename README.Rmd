@@ -14,11 +14,11 @@ library(rgl)
 
 ```{r, echo = FALSE}
 las <- readLAS("viz/viz.las")
-next3d()
+
 plot(las, colorPalette = viridis::magma(n = 50), bg = "white", size = 3, axis = T)
 cy.mat <-  cbind(11.34, 11.34, 1.37:25)
 cy.mat.p <-  cbind(11.34, 11.34, 15:25)
 shade3d(cylinder3d(cy.mat , radius = 11.34, side = 100),col="#B63679FF", alpha = .2)
 grid3d(c("x", "y+", "z"))
-rglwidget(elementId = "plot3drgl")
+
 ```

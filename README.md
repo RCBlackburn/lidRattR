@@ -1,7 +1,7 @@
 lidRmts
 ================
 
-#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based varaibles using three lidR techniques
+#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based varaibles using three lidar techniques
 
 ### Cloud-based technique
 

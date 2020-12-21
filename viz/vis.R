@@ -75,5 +75,5 @@ dev.off()
 
 
 
-
+plot(low, colorPalette = viridis::magma(n=50), bg = "white")
 

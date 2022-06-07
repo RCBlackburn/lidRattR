@@ -17,3 +17,25 @@ output: github_document
 ### Voxel-based technique
 
 ![](viz/voxel.gif)
+
+```{r}
+library(lidR)
+## read in example plot from lidR package
+LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
+las <- readLAS(LASfile)
+
+
+las_vox <- vox(las, res = 2)
+plot_metrics <- vox_sum(las_vox, 2)
+
+## run function across larger las at a defined pixel resolution
+v_metrics <- pixel_metrics(las_vox, func = .vox_raster, res = 20)
+
+
+## plot output
+plot(v_metrics)
+
+
+
+```
+

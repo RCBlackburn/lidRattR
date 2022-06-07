@@ -3,23 +3,18 @@ title: "lidRmts"
 output: github_document
 ---
 
-#### A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles using three lidar techniques
+#### A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles for the voxel based approach. Additional scripts for cloud and tree-based approaches were used in Blackburn et al. 2021 (https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506). 
 
-### Cloud-based technique
-
-![](viz/cloud.gif)
-
-
-### Tree-based technique
-
-![](viz/tree.gif)
-
-### Voxel-based technique
+### Voxel-based apprach 
 
 ![](viz/voxel.gif)
+This approach voxelizes the point cloud into desired resolutions and summarizes it a given area. 
 
 ```{r}
+## install package and load library
+devtools::install_github("RCBlackburn/lidRmts")
 library(lidR)
+library(lidRmts)
 ## read in example plot from lidR package
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
 las <- readLAS(LASfile)

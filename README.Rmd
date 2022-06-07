@@ -8,11 +8,11 @@ output: github_document
 ### Voxel-based apprach 
 
 ![](viz/voxel.gif)
-This approach voxelizes the point cloud into desired resolutions and summarizes it a given area. 
+The voxel-based approach voxelizes the point cloud and summarizes voxel information across a given area. This allows voxel-based variables to be assessed using an area-based approach. This packages main functions include `vox()`, `vox_sum()`, and `.vox_rater`. An example of these functions being used can be seen below:
 
 ```{r}
 ## install package and load library
-devtools::install_github("RCBlackburn/lidRmts")
+# devtools::install_github("RCBlackburn/lidRmts")
 library(lidR)
 library(lidRmts)
 ## read in example plot from lidR package

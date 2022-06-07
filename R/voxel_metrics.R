@@ -1,12 +1,12 @@
-#' Voxel metrics function
+#' Individual voxel-based SVi function
 #'
-#' This function takes the height values for each lidar point and
-#' is used within lidR::voxel_metrics() and calculates the sub-voxel density (SVi) for each voxel.
+#' This function takes the height values for each lidar point point cloud and
+#' is used within lidR::voxel_metrics() to calculate the sub-voxel density (SVi) for each voxel.
 #' @param z height
 #' @keywords lidar voxel metrics
 #' @export
 #' @examples
-#' voxels <- voxel_metrics(las, func = vox_mt(Z), res = resolution)
+#' voxels <- voxel_metrics(las, func = vox_mt(Z), res = 2)
 
 vox_mt <- function(z)
 {
@@ -17,15 +17,14 @@ vox_mt <- function(z)
   )
   return(metrics)}
 
-#' Standard voxel metrics function
+#' Individual voxel-based variable function
 #'
-#' This function provides voxel metrics off similar metrics in
-#' Pearse et al. 2019 and Kim et al. 2016. The function also includes
-#' additional summary statistics for height and intensity values within each voxel
-#' @param vox a
+#' This function provides individual voxel-based variables including the frequency ratio (FRDi),
+#' number of returns below each voxel (PDi), and the number of returns above each voxel (PDi_above),
+#' @param vox lasmetrics3d object created by lidR::voxel_metrics() using the vox_mt() function
 #' @keywords lidar voxel metrics
 #' @import data.table
-#' @import dplyr
+#' @import tidyr
 #' @export
 #' @examples
 #' std_voxel()
@@ -84,13 +83,42 @@ vox_mt2 <- function(vox)
   return(metrics)
 }
 
-##outputs a voxelsed las with voxel metrics per voxel
+#' Voxelize function
+#'
+#' This function provides individual voxel-based variables including sub-voxel density (SVi), frequency ratio (FRDi),
+#' number of returns below each voxel (PDi), and the number of returns above each voxel (PDi_above),
+#' @param las las object
+#' @param res voxel cubic resolution in units of las object
+#' @keywords lidar voxel metrics
+#' @import data.table
+#' @import tidyr
+#' @import lidR
+#' @export
+#' @examples
+#' las <- readLAS(LASfile)
+#' las_vox <- vox(las, res = 2)
+#'
 vox <- function(las, res = res){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z), res = res, all_voxels = TRUE)
   vox_2 <- vox_mt2(vox)
   out <- LAS(vox_2, header = las@header, crs = las@crs, index = las@index )
 }
 
+#' Voxel-based variable summary statistics
+#'
+#' This function provides summarized voxel-based variables including for each of the variables created using the
+#' vox() function. Summary statistics include the mean, median, varaince, standard deviation, coefficient of variation,
+#' IQR, skewness, and kurtosis.
+#' @param las voxelized las object
+#' @param res voxel cubic resolution in units of las object
+#' @keywords lidar voxel metrics
+#' @import data.table
+#' @export
+#' @examples
+#' las <- readLAS(LASfile)
+#' las_vox <- vox(las, res = 2)
+#' voxel_summaries <- vox_sum(las_vox, 2)
+#'
 vox_sum <-  function(las_vox, res){
   las_vox <- las_vox@data
   means <- apply(las_vox[,4:ncol(las_vox)], 2, mean, na.rm = TRUE)
@@ -120,7 +148,23 @@ vox_sum <-  function(las_vox, res){
 }
 
 
-
+#' Voxel-based variable summary statistics for lidR::pixel_metrics() function
+#'
+#' This function provides summarized voxel-based variables just as the vox_sum() function.
+#' This can be used in conjunction is lidR::pixel_metrics() to make raster layers of voxel-based summary statistics.
+#' @param SVi
+#' @param FRDi
+#' @param PDi
+#' @param PDi_above
+#' @keywords lidar voxel metrics
+#' @import data.table
+#' @export
+#' @examples
+#' las <- readLAS(LASfile)
+#' las_vox <- vox(las, res = 2)
+#' v_metrics <- pixel_metrics(las_vox, func = .vox_raster, res = 20)
+#'
+#'
 vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above){
   las_vox <- data.frame(SVi = SVi, FRDi = FRDi, PDi = PDi, PDi_above = PDi_above)
   means <- apply(las_vox, 2, mean, na.rm = TRUE)

@@ -35,7 +35,5 @@ v_metrics <- pixel_metrics(las_vox, func = .vox_raster, res = 20)
 ## plot output
 plot(v_metrics)
 
-
-
 ```
 

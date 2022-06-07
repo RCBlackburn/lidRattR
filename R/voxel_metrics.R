@@ -1,8 +1,3 @@
-library("lidR")
-library("sf")
-library("dplyr")
-library("data.table")
-
 #' Voxel metrics function
 #'
 #' This function takes the height values for each lidar point and
@@ -124,7 +119,7 @@ vox_sum <-  function(las_vox, res){
   return(data)
 }
 
-las_vox <- data.table(las_vox$SVi, las_vox$FRDi, las_vox$PDi, las_vox$PDi_above)
+
 
 vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above){
   las_vox <- data.frame(SVi = SVi, FRDi = FRDi, PDi = PDi, PDi_above = PDi_above)
@@ -157,28 +152,5 @@ vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above){
   }
 
 .vox_raster <- ~vox_sum_raster(SVi, FRDi, PDi, PDi_above)
-
-
-## read in example plot from lidR package
-LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
-las <- readLAS(LASfile)
-
-## clip center to make a plot size las
-center <- st_buffer(st_as_sf(st_centroid(st_as_sfc(st_bbox(las)))), 11.34)
-
-las_plot <- clip_roi(las, center)
-
-
-
-las_vox <- vox(las, res = 2)
-plot_metrics <- vox_sum(las_vox, 2)
-
-## run function across larger las at a defined pixel resolution
-v_metrics <- pixel_metrics(las_vox, func = .vox_raster, res = 20)
-
-
-
-## plot output
-plot(v_metrics)
 
 

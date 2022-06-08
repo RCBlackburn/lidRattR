@@ -34,7 +34,7 @@ las_tree <- segment_trees(las, li2012())
 plot(las_tree, color = "treeID")
 ```
 
-Next, we can turn the segmented tree point cloud into a tree attribute point cloud that can be used to summarize atributes to different extents. 
+Next, we can turn the segmented tree point cloud into a tree attribute point cloud that can be used to summarize attributes to different extents. 
 
 ```{r}
 las_tree <- ind_tree(las_tree)

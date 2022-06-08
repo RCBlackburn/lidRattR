@@ -25,6 +25,7 @@ vox_mt <- function(z)
 #' @keywords lidar voxel metrics
 #' @import data.table
 #' @import tidyr
+#' @import dplyr
 #' @export
 #' @examples
 #' std_voxel()

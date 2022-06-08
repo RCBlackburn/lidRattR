@@ -41,7 +41,7 @@ las_tree <- ind_tree(las_tree)
 
 ## entire las summary statistics 
 overall_t_metrics <- tree_sum(las_tree)
-knitr::kable(plot_t_metrics)
+knitr::kable(overall_t_metrics)
 
 ## rasterized summary statistics 
 tree_metrics <- pixel_metrics(las_tree, tree_sum_raster(Z, npoints, ca), res = 20)
@@ -60,8 +60,8 @@ Using these functions, We produce a voxelized point cloud with indivdual voxel m
 las_vox <- vox(las, res = 2)
 
 ## entire las summary statistics 
-plot_v_metrics <- vox_sum(las_vox, 2)
-knitr::kable(plot_metrics[c(1:4, 33)])
+overall_v_metrics <- vox_sum(las_vox, 2)
+knitr::kable(overall_v_metrics[c(1:4, 33)])
 
 ## rasterized summary statistics  
 v_metrics <- pixel_metrics(las_vox, func = vox_sum_raster(SVi, FRDi, PDi, PDi_above), res = 20)

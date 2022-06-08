@@ -5,19 +5,13 @@ lidRmts
 
 ## Install package
 
+``` r
+devtools::install_github("RCBlackburn/lidRmts")
+```
+
     ## Downloading GitHub repo RCBlackburn/lidRmts@HEAD
 
-    ##       ✔  checking for file 'C:\Users\Ryan\AppData\Local\Temp\Rtmpmw3jOb\remotes54d474112337\RCBlackburn-lidRmts-7ed6424/DESCRIPTION' (365ms)
-    ##       ─  preparing 'lidRmts':
-    ##    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   ✔  checking DESCRIPTION meta-information
-    ##       ─  checking for LF line-endings in source and make files and shell scripts
-    ##       ─  checking for empty or unneeded directories
-    ##      Omitted 'LazyData' from DESCRIPTION
-    ##       ─  building 'lidRmts_0.0.0.9000.tar.gz'
-    ##      
-    ## 
-
-    ## Installing package into 'C:/Users/Ryan/AppData/Local/Temp/RtmpScWq6M/temp_libpath3a8846a25ca8'
+    ## Installing package into 'C:/Users/Ryan/AppData/Local/Temp/RtmpScWq6M/temp_libpath3a8864f62ed7'
     ## (as 'lib' is unspecified)
 
 ## Load in library and example data from lidR package

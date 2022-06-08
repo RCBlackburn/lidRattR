@@ -7,7 +7,7 @@ output: github_document
 
 ## Install package
 
-```{r, echo = FALSE}
+```{r, results = FALSE}
 devtools::install_github("RCBlackburn/lidRmts")
 ```
 

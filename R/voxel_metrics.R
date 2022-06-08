@@ -86,7 +86,7 @@ vox_mt2 <- function(vox)
 #' Voxelize function
 #'
 #' This function provides individual voxel-based variables including sub-voxel density (SVi), frequency ratio (FRDi),
-#' number of returns below each voxel (PDi), and the number of returns above each voxel (PDi_above),
+#' number of returns below each voxel (PDi), and the number of returns above each voxel (PDi_above).
 #' @param las las object
 #' @param res voxel cubic resolution in units of las object
 #' @keywords lidar voxel metrics

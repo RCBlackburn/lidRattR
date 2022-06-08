@@ -33,10 +33,22 @@ LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
 las <- readLAS(LASfile)
 
 
+## Run the voxelize function to produce a voxelized point cloud wiht indivdual voxel metrics
 las_vox <- vox(las, res = 2)
+
+## get summary statistics for voxelized point cloud
 plot_metrics <- vox_sum(las_vox, 2)
 
-## run function across larger las at a defined pixel resolution
+## display the mean metrics
+knitr::kable(plot_metrics[c(1:4, 33)])
+```
+
+| SVi_2\_mean | FRDi_2\_mean | PDi_2\_mean | PDi_above_2\_mean | pct_fill_vox_2 |
+|------------:|-------------:|------------:|------------------:|---------------:|
+|   0.3790793 |     3.08e-05 |    3.171619 |           2.51457 |      0.2001375 |
+
+``` r
+## summarize voxel metrics using lidR::pixelmetrics() with vox_sum_raster() 
 v_metrics <- pixel_metrics(las_vox, func = vox_sum_raster(SVi, FRDi, PDi, PDi_above), res = 20)
 
 

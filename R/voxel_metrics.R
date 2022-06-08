@@ -195,6 +195,5 @@ vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above){
 
   }
 
-.vox_raster <- ~vox_sum_raster(SVi, FRDi, PDi, PDi_above)
 
 

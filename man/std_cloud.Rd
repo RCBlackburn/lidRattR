@@ -20,6 +20,7 @@ This function provides a variety of area based metrics from Pearse et al. 2019 a
 }
 \examples{
 std_cloud()
+
 }
 \keyword{cloud}
 \keyword{lidar}

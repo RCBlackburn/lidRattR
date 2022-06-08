@@ -9,6 +9,7 @@
 #' @export
 #' @examples
 #' std_cloud()
+#'
 
 std_cloud <- function(x, y, z, i, ReturnNumber, usei)
 {
@@ -166,7 +167,7 @@ std_cloud <- function(x, y, z, i, ReturnNumber, usei)
 
   )
 
-  return(c(metrics, per_RN, zquantiles, d, dcum, icum))
+  return(data.frame(c(metrics, per_RN, zquantiles, d, dcum, icum)))
   }
   else{
     # output
@@ -216,7 +217,7 @@ std_cloud <- function(x, y, z, i, ReturnNumber, usei)
 
     )
 
-    return(c(metrics, per_RN, zquantiles, d, dcum))}
+    return(data.frame(c(metrics, per_RN, zquantiles, d, dcum)))}
 }
 
 #' Standard tree metrics function

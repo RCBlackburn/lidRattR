@@ -104,6 +104,9 @@ vox <- function(las, res = res){
   out <- LAS(vox_2, header = las@header, crs = las@crs, index = las@index )
 }
 
+
+
+
 #' Voxel-based variable summary statistics
 #'
 #' This function provides summarized voxel-based variables including for each of the variables created using the
@@ -196,4 +199,87 @@ vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above){
   }
 
 
+#' Tree variables to point cloud
+#'
+#' This function creates a point cloud with tree merics that can be summarized
+#' @param las las object
+#' @keywords lidar tree metrics
+#' @import data.table
+#' @import tidyr
+#' @import lidR
+#' @export
+#' @examples
+#' las <- readLAS(LASfile)
+#' las_tree <- segment_trees(las, li2012())
+#' las_tree <- ind_tree(las_tree)
+#'
 
+ind_tree <- function(las){
+  trees <- lidR::crown_metrics(las, .stdtreemetrics)
+  locs <- data.frame(sf::st_coordinates(trees), trees[c(3,4)])
+  locs <- locs[-6]
+  names(locs)[5] <- "ca"
+  trees_las <- lidR::LAS(locs, header = las@header, crs = las@crs, index = las@index)
+}
+
+
+
+#' Tree-based variable summary statistics
+#'
+#' This function provides summarized tree-based variables  for each of the variables created using the
+#' ind_tree() function. Summary statistics include the mean, standard deviation, and coefficient of variation.
+#' @param las las object from ind_tree() function
+#' @keywords lidar tree metrics
+#' @export
+#' @examples
+#' las <- readLAS(LASfile)
+#' las_tree <- segment_trees(las, li2012())
+#' las_tree <- ind_tree(las_tree)
+#' plot_t_metrics <- tree_sum(las_tree
+#'
+tree_sum <- function(las_tree){
+  data <- las_tree@data
+  tree_metrics <- data.frame(
+  ntrees = length(data$Z),
+  ht_mean =  mean(data$Z, na.rm = TRUE),
+  ht_sd = sd(data$Z, na.rm = TRUE),
+  ht_cv = sd(data$Z, na.rm = TRUE)/mean(data$Z, na.rm = TRUE),
+  npts_mean = mean(data$npoints, na.rm = TRUE),
+  npts_sd = sd(data$npoints, na.rm = TRUE),
+  npts_cv = sd(data$npoints, na.rm = TRUE)/mean(data$npoints, na.rm = TRUE),
+  ca_mean = mean(data$ca),
+  ca_sd = sd(data$ca),
+  ca_cv = sd(data$ca, na.rm = TRUE)/mean(data$ca, na.rm = TRUE))
+  return(tree_metrics)
+}
+
+#' Tree-based variable summary statistics for lidR::pixel_metrics() function
+#'
+#' This function provides summarized tree-based variables just as the tree_sum() function.
+#' This can be used in conjunction is lidR::pixel_metrics() to make raster layers of tree-based summary statistics.
+#' @param Z
+#' @param npoints
+#' @param ca
+#' @keywords lidar tree metrics
+#' @export
+#' @examples
+#' las <- readLAS(LASfile)
+#' las_tree <- segment_trees(las, li2012())
+#' las_tree <- ind_tree(las_tree)
+#' t_metrics <- pixel_metrics(las_tree, tree_sum_raster(Z, npoints, ca), res = 20)
+#'
+
+tree_sum_raster <- function(Z, npoints, ca){
+  tree_metrics <- list(
+  ntrees = length(Z),
+  ht_mean =  mean(Z, na.rm = TRUE),
+  ht_sd = sd(Z, na.rm = TRUE),
+  ht_cv = sd(Z, na.rm = TRUE)/mean(Z, na.rm = TRUE),
+  npts_mean = mean(npoints, na.rm = TRUE),
+  npts_sd = sd(npoints, na.rm = TRUE),
+  npts_cv = sd(npoints, na.rm = TRUE)/mean(npoints, na.rm = TRUE),
+  ca_mean = mean(ca),
+  ca_sd = sd(ca),
+  ca_cv = sd(ca, na.rm = TRUE)/mean(ca, na.rm = TRUE))
+  return(tree_metrics)
+}

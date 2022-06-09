@@ -1,7 +1,7 @@
 lidRmts
 ================
 
-#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based varaibles. Newer function focus on the use of tree- and voxel-based variables. These appraoches are further outlines in Blackburn et al. 2021 (<https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506>). Below are some examples:
+#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based variables. These newer functions focus on the use of tree- and voxel-based variables. These appraoches are further outlined in Blackburn et al. 2021 (<https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506>). Below are some examples:
 
 ## Install package
 

@@ -98,7 +98,7 @@ vox_mt2 <- function(vox, res)
 #' @export
 #' @examples
 #' las <- readLAS(LASfile)
-#' las_vox <- vox(las, res = 2)
+#' las_vox <- ind_vox(las, res = 2)
 
 ind_vox <- function(las, res = res){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z), res = res, all_voxels = TRUE)

@@ -215,7 +215,6 @@ vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above, vox_res){
 #' las_tree <- segment_trees(las, li2012())
 #' las_tree <- ind_tree(las_tree)
 #'
-
 ind_tree <- function(las){
   trees <- lidR::crown_metrics(las, .stdtreemetrics)
   locs <- data.frame(sf::st_coordinates(trees), trees[c(3,4)])
@@ -237,8 +236,7 @@ ind_tree <- function(las){
 #' las <- readLAS(LASfile)
 #' las_tree <- segment_trees(las, li2012())
 #' las_tree <- ind_tree(las_tree)
-#' plot_t_metrics <- tree_sum(las_tree
-#'
+#' plot_t_metrics <- tree_sum(las_tree)
 
 tree_sum <- function(las_tree){
   data <- las_tree@data

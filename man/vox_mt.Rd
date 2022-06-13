@@ -16,7 +16,7 @@ vox_mt(z)
 }
 \description{
 This function takes the intensity and height values for each lidar point and
-is used within lidR::voxel_metrics() which is used within lidRmts::std_voxel()
+is used within lidR::voxel_metrics() which is used within lidRattR::std_voxel()
 
 This function takes the height values for each lidar point point cloud and
 is used within lidR::voxel_metrics() to calculate the sub-voxel density (SVi) for each voxel.

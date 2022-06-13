@@ -287,7 +287,7 @@ std_trees = function(trees){
 #' Voxel metrics function
 #'
 #' This function takes the intensity and height values for each lidar point and
-#' is used within lidR::voxel_metrics() which is used within lidRmts::std_voxel()
+#' is used within lidR::voxel_metrics() which is used within lidRattR::std_voxel()
 #' @param z height
 #' @param i intensity
 #' @keywords lidar voxel metrics

@@ -1,13 +1,13 @@
-Package: lidRmts
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Package: lidRattR
+Title: Area based lidar attributes   
+Version: 0.0.1
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Ryan",
+           family = "Blackburn",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "ryan@iblackburn.com",
+           comment = c(ORCID = "0000-0002-2952-0865"))
+Description: This packages calculates lidar-derived area-based attrbutes for tree and voxel attributes with assistance from the lidR package. 
 License: What license it uses
 Imports:
     lidR,

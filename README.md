@@ -1,7 +1,7 @@
 lidRmts
 ================
 
-#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based variables. These newer functions focus on the use of tree- and voxel-based variables. These appraoches are further outlined in Blackburn et al. 2021 (<https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506>). Below are some examples:
+#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based varaibles. Newer function focus on the use of tree- and voxel-based variables. These appraoches are further outlines in Blackburn et al. 2021 (<https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506>). Below are some examples:
 
 ## Install package
 
@@ -11,28 +11,9 @@ lidRmts
 
 ## Load in library and example data from lidR package
 
-``` r
-library(lidR)
-library(lidRmts)
-```
-
-    ## Warning: replacing previous import 'data.table::last' by 'dplyr::last' when
-    ## loading 'lidRmts'
-
-    ## Warning: replacing previous import 'data.table::first' by 'dplyr::first' when
-    ## loading 'lidRmts'
-
-    ## Warning: replacing previous import 'data.table::between' by 'dplyr::between'
-    ## when loading 'lidRmts'
-
-``` r
-LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
-las <- readLAS(LASfile)
-```
-
 ## Tree-based approach
 
-![](viz/tree.gif%20=50x)
+![](viz/tree.gif)
 
 The tree based approach summarizes individual tree based information to
 a given area (e.g., plot, pixel).
@@ -51,12 +32,7 @@ extents.
 
 ``` r
 las_tree <- ind_tree(las_tree)
-```
 
-    ## Warning: Invalid file: the header describes extra bytes attributes that are not
-    ## in the data.
-
-``` r
 ## entire las summary statistics 
 overall_t_metrics <- tree_sum(las_tree)
 knitr::kable(overall_t_metrics)
@@ -69,6 +45,7 @@ knitr::kable(overall_t_metrics)
 ``` r
 ## rasterized summary statistics 
 tree_metrics <- pixel_metrics(las_tree, tree_sum_raster(Z, npoints, ca), res = 20)
+
 plot(tree_metrics)
 ```
 
@@ -87,7 +64,7 @@ voxel metrics and then summarize them to either the entire las or a
 raster with defined spatial resolution.
 
 ``` r
-las_vox <- vox(las, res = 2)
+las_vox <- ind_vox(las, res = 2)
 
 ## entire las summary statistics 
 overall_v_metrics <- vox_sum(las_vox, 2)
@@ -100,7 +77,7 @@ knitr::kable(overall_v_metrics[c(1:4, 33)])
 
 ``` r
 ## rasterized summary statistics  
-v_metrics <- pixel_metrics(las_vox, func = vox_sum_raster(SVi, FRDi, PDi, PDi_above), res = 20)
+v_metrics <- pixel_metrics(las_vox, func = vox_sum_raster(SVi_2, FRDi_2, PDi_2, PDi_above_2, vox_res = 2), res = 20)
 plot(v_metrics)
 ```
 

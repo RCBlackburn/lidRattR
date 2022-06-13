@@ -1,21 +1,21 @@
 ---
-title: "lidRmts"
+title: "lidRattR"
 output: github_document
 ---
 
-#### A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles. Newer function focus on the use of tree- and voxel-based variables. These appraoches are further outlines in Blackburn et al. 2021 (https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506). Below are some examples:
+#### A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles. Newer function focus on the use of tree- and voxel-based attributes. These appraoches are further outlined in Blackburn et al. 2021 (https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506). Below are some examples:
 
 ## Install package
 
 ```{r, results = FALSE}
-devtools::install_github("RCBlackburn/lidRmts")
+# devtools::install_github("RCBlackburn/lidRmts")
 ```
 
 ## Load in library and example data from lidR package
 
 ```{r, include = FALSE}
 library(lidR)
-library(lidRmts)
+library(lidRattR)
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
 las <- readLAS(LASfile)
 ```
@@ -23,13 +23,13 @@ las <- readLAS(LASfile)
 
 ## Tree-based approach
 
-![](viz/tree.gif =50x)
+![](viz/tree.gif)
 
 The tree based approach summarizes individual tree based information to a given area (e.g., plot, pixel).
 
 First, We segment the trees using a tree segmentation function from lidR. Here, we use the Li et al. 2012 algorithm.
 
-```{r}
+```{r, webgl = TRUE}
 las_tree <- segment_trees(las, li2012())
 plot(las_tree, color = "treeID")
 ```

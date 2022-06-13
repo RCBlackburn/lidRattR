@@ -8,12 +8,12 @@ output: github_document
 ## Install package
 
 ```{r, results = FALSE}
-# devtools::install_github("RCBlackburn/lidRmts")
+# devtools::install_github("RCBlackburn/lidRattR")
 ```
 
 ## Load in library and example data from lidR package
 
-```{r, message= = FALSE}
+```{r, message = FALSE}
 library(lidR)
 library(lidRattR)
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")

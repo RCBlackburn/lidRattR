@@ -331,8 +331,8 @@ vox_mt <- function(z, i)
 #' @param sf_poly sf polygon to clip voxels to. Required.
 #' different height bins in Pearse et al. 2019.
 #' @keywords lidar voxel metrics
-#' @import data.table
 #' @import dplyr
+#' @import data.table
 #' @export
 #' @examples
 #' std_voxel()

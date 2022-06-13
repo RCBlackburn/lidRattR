@@ -6,13 +6,8 @@ lidRmts
 ## Install package
 
 ``` r
-devtools::install_github("RCBlackburn/lidRmts")
+# devtools::install_github("RCBlackburn/lidRmts")
 ```
-
-    ## Downloading GitHub repo RCBlackburn/lidRmts@HEAD
-
-    ## Installing package into 'C:/Users/Ryan/AppData/Local/Temp/RtmpScWq6M/temp_libpath3a8864f62ed7'
-    ## (as 'lib' is unspecified)
 
 ## Load in library and example data from lidR package
 
@@ -37,7 +32,7 @@ las <- readLAS(LASfile)
 
 ## Tree-based approach
 
-![](viz/tree.gif)
+![](viz/tree.gif%20=50x)
 
 The tree based approach summarizes individual tree based information to
 a given area (e.g., plot, pixel).

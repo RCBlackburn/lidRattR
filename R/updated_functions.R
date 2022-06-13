@@ -23,14 +23,14 @@ vox_mt <- function(z)
 #' number of returns below each voxel (PDi), and the number of returns above each voxel (PDi_above),
 #' @param vox lasmetrics3d object created by lidR::voxel_metrics() using the vox_mt() function
 #' @keywords lidar voxel metrics
+#' @import dplyr
 #' @import data.table
 #' @import tidyr
-#' @import dplyr
 #' @export
 #' @examples
 #' std_voxel()
 #'
-vox_mt2 <- function(vox)
+vox_mt2 <- function(vox, res)
 {
   fullvox <- data.table(vox, id_xyz = paste0(vox$X,"-", vox$Y,"-",vox$Z))
   fullvox$SVi[is.na(fullvox$SVi)] <- 0
@@ -81,6 +81,7 @@ vox_mt2 <- function(vox)
     PDi = fullvox$npoints_below,
     PDi_above = fullvox$npoints_above
   )
+  names(metrics)[4:ncol(metrics)] <- paste0(names(metrics)[4:ncol(metrics)], "_", res)
   return(metrics)
 }
 
@@ -98,10 +99,10 @@ vox_mt2 <- function(vox)
 #' @examples
 #' las <- readLAS(LASfile)
 #' las_vox <- vox(las, res = 2)
-#'
-vox <- function(las, res = res){
+
+ind_vox <- function(las, res = res){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z), res = res, all_voxels = TRUE)
-  vox_2 <- vox_mt2(vox)
+  vox_2 <- vox_mt2(vox, res = res)
   out <- LAS(vox_2, header = las@header, crs = las@crs, index = las@index )
 }
 
@@ -126,24 +127,24 @@ vox <- function(las, res = res){
 vox_sum <-  function(las_vox, res){
   las_vox <- las_vox@data
   means <- apply(las_vox[,4:ncol(las_vox)], 2, mean, na.rm = TRUE)
-  names(means)<- paste0(names(means), "_", res, "_", "mean")
+  names(means)<- paste0(names(means), "_", "mean")
   meds <- apply(las_vox[,4:ncol(las_vox)], 2, median, na.rm = TRUE)
-  names(meds)<- paste0(names(meds), "_",  res, "_","med")
+  names(meds)<- paste0(names(meds), "_", "med")
   var <- apply(las_vox[,4:ncol(las_vox)], 2, var, na.rm = TRUE)
-  names(var)<- paste0(names(var), "_", res, "_", "var")
+  names(var)<- paste0(names(var), "_",  "var")
   sd <- apply(las_vox[,4:ncol(las_vox)], 2, sd, na.rm = TRUE)
-  names(sd)<- paste0(names(sd), "_", res, "_", "sd")
+  names(sd)<- paste0(names(sd), "_", "sd")
   cv <- apply(las_vox[,4:ncol(las_vox)], 2, function(x) {sd(x, na.rm = T)/mean(x, na.rm = T)})
-  names(cv)<- paste0(names(cv), "_", res, "_", "cv")
+  names(cv)<- paste0(names(cv), "_", "cv")
   IQR <- apply(las_vox[,4:ncol(las_vox)], 2,IQR, na.rm = T)
-  names(IQR)<- paste0(names(IQR), "_", res, "_", "IQR")
+  names(IQR)<- paste0(names(IQR), "_", "IQR")
   skew <- apply(las_vox[,4:ncol(las_vox)], 2, function(x) {(sum((x - mean(x, na.rm = T))^3,na.rm = T)
                                                             /length(x))/(sum((x - mean(x, na.rm = T))^2,na.rm = T)
                                                                          /length(x))^(3/2)})
-  names(skew)<- paste0(names(skew), "_", res, "_", "skew")
+  names(skew)<- paste0(names(skew), "_", "skew")
   kurt <- apply(las_vox[,4:ncol(las_vox)], 2, function(x) {length(x)*sum((x- mean(x, na.rm = T))^4, na.rm = T)/
       (sum((x - mean(x, na.rm = T))^2, na.rm = T)^2)})
-  names(kurt)<- paste0(names(var), "_", res, "_", "kurt")
+  names(kurt)<- paste0(names(var), "_", "kurt")
   pct_fill_vox <- data.frame(pct_fill_vox = as.numeric(table(las_vox$SVi== 0)[1])/ length(las_vox$SVi))
   names(pct_fill_vox) <- paste0(names(pct_fill_vox), "_", res)
   data <- data.frame(c(means, meds, var, sd, cv, IQR, skew, kurt, pct_fill_vox))
@@ -169,27 +170,27 @@ vox_sum <-  function(las_vox, res){
 #' v_metrics <- pixel_metrics(las_vox, func = .vox_raster, res = 20)
 #'
 #'
-vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above){
-  las_vox <- data.frame(SVi = SVi, FRDi = FRDi, PDi = PDi, PDi_above = PDi_above)
+vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above, vox_res){
+  las_vox <- data.frame(SVi,FRDi, PDi, PDi_above)
   means <- apply(las_vox, 2, mean, na.rm = TRUE)
-  names(means)<- paste0(names(means), "_", "mean")
+  names(means)<- paste0(names(means), "_", vox_res, "_", "mean")
   meds <- apply(las_vox, 2, median, na.rm = TRUE)
-  names(meds)<- paste0(names(meds), "_","med")
+  names(meds)<- paste0(names(meds), "_", vox_res, "_", "med")
   var <- apply(las_vox, 2, var, na.rm = TRUE)
-  names(var)<- paste0(names(var), "_", "var")
+  names(var)<- paste0(names(var), "_", vox_res, "_", "var")
   sd <- apply(las_vox, 2, sd, na.rm = TRUE)
-  names(sd)<- paste0(names(sd), "_",  "sd")
+  names(sd)<- paste0(names(sd), "_", vox_res, "_", "sd")
   cv <- apply(las_vox, 2, function(x) {sd(x, na.rm = T)/mean(x, na.rm = T)})
-  names(cv)<- paste0(names(cv), "_", "cv")
+  names(cv)<- paste0(names(cv), "_", vox_res, "_",  "cv")
   IQR <- apply(las_vox, 2,IQR, na.rm = T)
-  names(IQR)<- paste0(names(IQR), "_", "IQR")
+  names(IQR)<- paste0(names(IQR), "_", vox_res, "_",  "IQR")
   skew <- apply(las_vox, 2, function(x) {(sum((x - mean(x, na.rm = T))^3,na.rm = T)
                                                             /length(x))/(sum((x - mean(x, na.rm = T))^2,na.rm = T)
                                                                          /length(x))^(3/2)})
-  names(skew)<- paste0(names(skew), "_","skew")
+  names(skew)<- paste0(names(skew), "_", vox_res, "_", "skew")
   kurt <- apply(las_vox, 2, function(x) {length(x)*sum((x- mean(x, na.rm = T))^4, na.rm = T)/
       (sum((x - mean(x, na.rm = T))^2, na.rm = T)^2)})
-  names(kurt)<- paste0(names(var), "_", "kurt")
+  names(kurt)<- paste0(names(var),  "_", vox_res, "_",  "kurt")
   pct_fill_vox <- data.frame(pct_fill_vox = as.numeric(table(las_vox[1]== 0)[1])/ length(las_vox[1]))
   names(pct_fill_vox) <- paste0(names(pct_fill_vox))
 
@@ -220,7 +221,7 @@ ind_tree <- function(las){
   locs <- data.frame(sf::st_coordinates(trees), trees[c(3,4)])
   locs <- locs[-6]
   names(locs)[5] <- "ca"
-  trees_las <- lidR::LAS(locs, header = las@header, crs = las@crs, index = las@index)
+  trees_las <- suppressWarnings(lidR::LAS(locs, header = las@header, crs = las@crs, index = las@index))
 }
 
 
@@ -238,6 +239,7 @@ ind_tree <- function(las){
 #' las_tree <- ind_tree(las_tree)
 #' plot_t_metrics <- tree_sum(las_tree
 #'
+
 tree_sum <- function(las_tree){
   data <- las_tree@data
   tree_metrics <- data.frame(

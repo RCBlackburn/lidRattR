@@ -13,7 +13,7 @@ devtools::install_github("RCBlackburn/lidRmts")
 
 ## Load in library and example data from lidR package
 
-```{r}
+```{r, include = FALSE}
 library(lidR)
 library(lidRmts)
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
@@ -23,7 +23,7 @@ las <- readLAS(LASfile)
 
 ## Tree-based approach
 
-![](viz/tree.gif)
+![](viz/tree.gif =50x)
 
 The tree based approach summarizes individual tree based information to a given area (e.g., plot, pixel).
 
@@ -45,6 +45,7 @@ knitr::kable(overall_t_metrics)
 
 ## rasterized summary statistics 
 tree_metrics <- pixel_metrics(las_tree, tree_sum_raster(Z, npoints, ca), res = 20)
+
 plot(tree_metrics)
 ```
 
@@ -57,14 +58,14 @@ The voxel-based approach voxelizes the point cloud and summarizes voxel informat
 Using these functions, We produce a voxelized point cloud with indivdual voxel metrics and then summarize them to either the entire las or a raster with defined spatial resolution. 
 
 ```{r}
-las_vox <- vox(las, res = 2)
+las_vox <- ind_vox(las, res = 2)
 
 ## entire las summary statistics 
 overall_v_metrics <- vox_sum(las_vox, 2)
 knitr::kable(overall_v_metrics[c(1:4, 33)])
 
 ## rasterized summary statistics  
-v_metrics <- pixel_metrics(las_vox, func = vox_sum_raster(SVi, FRDi, PDi, PDi_above), res = 20)
+v_metrics <- pixel_metrics(las_vox, func = vox_sum_raster(SVi_2, FRDi_2, PDi_2, PDi_above_2, vox_res = 2), res = 20)
 plot(v_metrics)
 ```
 

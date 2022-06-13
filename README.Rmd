@@ -13,7 +13,7 @@ output: github_document
 
 ## Load in library and example data from lidR package
 
-```{r, include = FALSE}
+```{r, message= = FALSE}
 library(lidR)
 library(lidRattR)
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")

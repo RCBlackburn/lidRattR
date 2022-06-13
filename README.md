@@ -1,15 +1,34 @@
-lidRmts
+lidRattR
 ================
 
-#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based varaibles. Newer function focus on the use of tree- and voxel-based variables. These appraoches are further outlines in Blackburn et al. 2021 (<https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506>). Below are some examples:
+#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based varaibles. Newer function focus on the use of tree- and voxel-based attributes. These appraoches are further outlined in Blackburn et al. 2021 (<https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506>). Below are some examples:
 
 ## Install package
 
 ``` r
-# devtools::install_github("RCBlackburn/lidRmts")
+# devtools::install_github("RCBlackburn/lidRattR")
 ```
 
 ## Load in library and example data from lidR package
+
+``` r
+library(lidR)
+library(lidRattR)
+```
+
+    ## Warning: replacing previous import 'data.table::last' by 'dplyr::last' when
+    ## loading 'lidRattR'
+
+    ## Warning: replacing previous import 'data.table::first' by 'dplyr::first' when
+    ## loading 'lidRattR'
+
+    ## Warning: replacing previous import 'data.table::between' by 'dplyr::between'
+    ## when loading 'lidRattR'
+
+``` r
+LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
+las <- readLAS(LASfile)
+```
 
 ## Tree-based approach
 

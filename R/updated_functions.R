@@ -112,7 +112,7 @@ ind_vox <- function(las, res = res){
 #' Voxel-based variable summary statistics
 #'
 #' This function provides summarized voxel-based variables including for each of the variables created using the
-#' vox() function. Summary statistics include the mean, median, varaince, standard deviation, coefficient of variation,
+#' ind_vox() function. Summary statistics include the mean, median, varaince, standard deviation, coefficient of variation,
 #' IQR, skewness, and kurtosis.
 #' @param las voxelized las object
 #' @param res voxel cubic resolution in units of las object

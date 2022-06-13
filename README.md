@@ -1,38 +1,33 @@
 lidRattR
 ================
 
-#### A package to be used in conjuction with lidR (<https://github.com/Jean-Romain/lidR>) that produces area-based varaibles. Newer function focus on the use of tree- and voxel-based attributes. These appraoches are further outlined in Blackburn et al. 2021 (<https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506>). Below are some examples:
+A package to be used in conjuction with lidR
+(<https://github.com/Jean-Romain/lidR>) that produces area-based
+varaibles. Newer function focus on the use of tree- and voxel-based
+attributes. These appraoches are further outlined in Blackburn et
+al. 2021 (<https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506>). Below
+are some examples:
 
-## Install package
+### Install package
 
 ``` r
 # devtools::install_github("RCBlackburn/lidRattR")
 ```
 
-## Load in library and example data from lidR package
+### Load in library and example data from lidR package
 
 ``` r
 library(lidR)
 library(lidRattR)
-```
-
-    ## Warning: replacing previous import 'data.table::last' by 'dplyr::last' when
-    ## loading 'lidRattR'
-
-    ## Warning: replacing previous import 'data.table::first' by 'dplyr::first' when
-    ## loading 'lidRattR'
-
-    ## Warning: replacing previous import 'data.table::between' by 'dplyr::between'
-    ## when loading 'lidRattR'
-
-``` r
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
 las <- readLAS(LASfile)
 ```
 
 ## Tree-based approach
 
-![](viz/tree.gif)
+<p align="center">
+<img src="viz/tree.gif" height="500" align="middle">
+</p>
 
 The tree based approach summarizes individual tree based information to
 a given area (e.g., plot, pixel).
@@ -45,6 +40,10 @@ las_tree <- segment_trees(las, li2012())
 plot(las_tree, color = "treeID")
 ```
 
+<p align="center">
+<img src="viz/seg_tree.png" height="400">
+</p>
+
 Next, we can turn the segmented tree point cloud into a tree attribute
 point cloud that can be used to summarize attributes to different
 extents.
@@ -54,7 +53,7 @@ las_tree <- ind_tree(las_tree)
 
 ## entire las summary statistics 
 overall_t_metrics <- tree_sum(las_tree)
-knitr::kable(overall_t_metrics)
+kable(overall_t_metrics)
 ```
 
 | ntrees |  ht_mean |    ht_sd |     ht_cv | npts_mean |  npts_sd |   npts_cv |  ca_mean |    ca_sd |   ca_cv |
@@ -68,11 +67,13 @@ tree_metrics <- pixel_metrics(las_tree, tree_sum_raster(Z, npoints, ca), res = 2
 plot(tree_metrics)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ## Voxel-based approach
 
-![](viz/voxel.gif)
+<p align="center">
+<img src="viz/voxel.gif" height="500" align="middle">
+</p>
 
 The voxel-based approach voxelizes the point cloud and summarizes voxel
 information across a given area. This allows voxel-based variables to be
@@ -87,7 +88,7 @@ las_vox <- ind_vox(las, res = 2)
 
 ## entire las summary statistics 
 overall_v_metrics <- vox_sum(las_vox, 2)
-knitr::kable(overall_v_metrics[c(1:4, 33)])
+kable(overall_v_metrics[c(1:4, 33)])
 ```
 
 | SVi_2\_mean | FRDi_2\_mean | PDi_2\_mean | PDi_above_2\_mean | pct_fill_vox_2 |
@@ -100,4 +101,4 @@ v_metrics <- pixel_metrics(las_vox, func = vox_sum_raster(SVi_2, FRDi_2, PDi_2, 
 plot(v_metrics)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

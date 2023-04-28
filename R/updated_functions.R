@@ -127,24 +127,24 @@ ind_vox <- function(las, res = res){
 vox_sum <-  function(las_vox, res){
   las_vox <- las_vox@data
   means <- apply(las_vox[,4:ncol(las_vox)], 2, mean, na.rm = TRUE)
-  names(means)<- paste0(names(means), "_", "mean")
+  names(means)<- paste0(names(means), "_", res, "_","mean")
   meds <- apply(las_vox[,4:ncol(las_vox)], 2, median, na.rm = TRUE)
-  names(meds)<- paste0(names(meds), "_", "med")
+  names(meds)<- paste0(names(meds), "_", res, "_", "med")
   var <- apply(las_vox[,4:ncol(las_vox)], 2, var, na.rm = TRUE)
-  names(var)<- paste0(names(var), "_",  "var")
+  names(var)<- paste0(names(var), "_",   res, "_","var")
   sd <- apply(las_vox[,4:ncol(las_vox)], 2, sd, na.rm = TRUE)
-  names(sd)<- paste0(names(sd), "_", "sd")
+  names(sd)<- paste0(names(sd), "_",  res, "_","sd")
   cv <- apply(las_vox[,4:ncol(las_vox)], 2, function(x) {sd(x, na.rm = T)/mean(x, na.rm = T)})
-  names(cv)<- paste0(names(cv), "_", "cv")
+  names(cv)<- paste0(names(cv), "_",  res, "_","cv")
   IQR <- apply(las_vox[,4:ncol(las_vox)], 2,IQR, na.rm = T)
-  names(IQR)<- paste0(names(IQR), "_", "IQR")
+  names(IQR)<- paste0(names(IQR), "_",  res, "_","IQR")
   skew <- apply(las_vox[,4:ncol(las_vox)], 2, function(x) {(sum((x - mean(x, na.rm = T))^3,na.rm = T)
                                                             /length(x))/(sum((x - mean(x, na.rm = T))^2,na.rm = T)
                                                                          /length(x))^(3/2)})
-  names(skew)<- paste0(names(skew), "_", "skew")
+  names(skew)<- paste0(names(skew), "_",  res, "_","skew")
   kurt <- apply(las_vox[,4:ncol(las_vox)], 2, function(x) {length(x)*sum((x- mean(x, na.rm = T))^4, na.rm = T)/
       (sum((x - mean(x, na.rm = T))^2, na.rm = T)^2)})
-  names(kurt)<- paste0(names(var), "_", "kurt")
+  names(kurt)<- paste0(names(kurt), "_", res, "_", "kurt")
   pct_fill_vox <- data.frame(pct_fill_vox = as.numeric(table(las_vox$SVi== 0)[1])/ length(las_vox$SVi))
   names(pct_fill_vox) <- paste0(names(pct_fill_vox), "_", res)
   data <- data.frame(c(means, meds, var, sd, cv, IQR, skew, kurt, pct_fill_vox))
@@ -185,21 +185,20 @@ vox_sum_raster <- function(SVi, FRDi, PDi, PDi_above, vox_res){
   IQR <- apply(las_vox, 2,IQR, na.rm = T)
   names(IQR)<- paste0(names(IQR), "_", vox_res, "_",  "IQR")
   skew <- apply(las_vox, 2, function(x) {(sum((x - mean(x, na.rm = T))^3,na.rm = T)
-                                                            /length(x))/(sum((x - mean(x, na.rm = T))^2,na.rm = T)
-                                                                         /length(x))^(3/2)})
+                                          /length(x))/(sum((x - mean(x, na.rm = T))^2,na.rm = T)
+                                                       /length(x))^(3/2)})
   names(skew)<- paste0(names(skew), "_", vox_res, "_", "skew")
   kurt <- apply(las_vox, 2, function(x) {length(x)*sum((x- mean(x, na.rm = T))^4, na.rm = T)/
       (sum((x - mean(x, na.rm = T))^2, na.rm = T)^2)})
-  names(kurt)<- paste0(names(var),  "_", vox_res, "_",  "kurt")
+  names(kurt)<- paste0(names(kurt),  "_", vox_res, "_",  "kurt")
   pct_fill_vox <- data.frame(pct_fill_vox = as.numeric(table(las_vox[1]== 0)[1])/ length(las_vox[1]))
-  names(pct_fill_vox) <- paste0(names(pct_fill_vox))
+  names(pct_fill_vox) <- paste0(names(pct_fill_vox),"_",vox_res)
 
   data <- data.frame(c(means, meds, var, sd, cv, IQR, skew, kurt, pct_fill_vox))
 
   return(data)
 
-  }
-
+}
 
 #' Tree variables to point cloud
 #'

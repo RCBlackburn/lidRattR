@@ -5,14 +5,14 @@
 \title{Voxel-based variable summary statistics}
 \usage{
 vox_sum(
-  SVi_D,
+  SViD,
   FRDi,
   FRSVi,
-  PDi_below,
-  PDi_above,
-  SV_sum,
-  SVM_md_above,
-  SVM_md,
+  PDiBelow,
+  PDiAbove,
+  SVsum,
+  SVMmdAbove,
+  SVMmd,
   SVM,
   vox_res
 )
@@ -23,5 +23,4 @@ IQR, skewness, and kurtosis. Summaries for this function are done to the entire 
 lidR::pixel_metrics() function.
 }
 \keyword{lidar}
-\keyword{metrics}
 \keyword{voxel}

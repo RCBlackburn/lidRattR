@@ -11,11 +11,10 @@ vox_mt(z)
 }
 \description{
 This function takes the height values (Z) for each lidar point point cloud and
-is used within lidR::voxel_metrics() to calculate the sub-voxel i (SVi) density (SVi_d) and a list of Z values for for each sub-voxel.
+is used within lidR::voxel_metrics() to calculate the sub-voxel i (SVi) density (SViD) and a list of Z values for for each sub-voxel.
 }
 \examples{
 voxels <- voxel_metrics(las, func = vox_mt(Z), res = 2)
 }
 \keyword{lidar}
-\keyword{metrics}
 \keyword{voxel}

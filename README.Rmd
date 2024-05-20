@@ -9,7 +9,7 @@ library(knitr)
 ```
 
 
-  A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based varaibles. Newer function focus on the use of tree- and voxel-based attributes. These appraoches are further outlined in Blackburn et al. 2021 (https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506). Below are some examples:
+A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lidR) that produces area-based variables. Newer functions focus on the use of tree- and voxel-based attributes. These approaches are further outlined in Blackburn et al. 2021 (https://cdnsciencepub.com/doi/10.1139/cjfr-2020-0506). Below are some examples:
 
 ### Install package
 
@@ -24,6 +24,10 @@ library(lidR)
 library(lidRattR)
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
 las <- readLAS(LASfile)
+las <- filter_poi(las, Classification != LASNOISE)
+las <- normalize_height(las, knnidw(k = 8, p = 2))
+las <- filter_poi(las, Z < 50 & Z >= 1.37 )
+las <- decimate_points(las, random_per_voxel(res = 1, n = 8))
 ```
 
 
@@ -46,18 +50,15 @@ plot(las_tree, color = "treeID")
 <img src="viz/seg_tree.png" height="400">
 </p>
 
-Next, we can turn the segmented tree point cloud into a tree attribute point cloud that can be used to summarize attributes to different extents. 
+Next, we can turn the segmented tree point cloud into a summary statistics of tree attributes to either the extent of the point cloud or within individual raster cells (resolution defined by rast_res). 
 
 ```{r, fig.asp= .5}
-las_tree <- ind_tree(las_tree)
-
 ## entire las summary statistics 
-overall_t_metrics <- tree_sum(las_tree)
-kable(overall_t_metrics)
+tree_metrics <- tree_summary(las_tree)
+kable(tree_metrics)
 
 ## rasterized summary statistics 
-tree_metrics <- pixel_metrics(las_tree, tree_sum_raster(Z, npoints, ca), res = 20)
-
+tree_metrics <- tree_raster(las_tree, rast_res = 20)
 plot(tree_metrics)
 ```
 
@@ -69,17 +70,15 @@ plot(tree_metrics)
 
 The voxel-based approach voxelizes the point cloud and summarizes voxel information across a given area. This allows voxel-based variables to be assessed using an area-based approach. 
 
-Using these functions, We produce a voxelized point cloud with indivdual voxel metrics and then summarize them to either the entire las or a raster with defined spatial resolution. 
+Using these functions, we produce summary statistics of voxel attributes to either the entire las or within individual raster cells (resolution defined by rast_res). These attributes can be computed without defining a specified maximum height for the analysis (max_z = NULL) or setting a maximum height that must be larger than the highest Z value in the study area. Applicability of certain voxel attributes depends on raster and voxel resolution. 
 
 ```{r, fig.asp= .5}
-las_vox <- ind_vox(las, res = 2)
-
 ## entire las summary statistics 
-overall_v_metrics <- vox_sum(las_vox, 2)
-kable(overall_v_metrics[c(1:4, 33)])
+voxel_metrics <- voxel_summary(las, vox_res = 2, max_z = 50)
+kable(voxel_metrics)
 
 ## rasterized summary statistics  
-v_metrics <- pixel_metrics(las_vox, func = vox_sum_raster(SVi_2, FRDi_2, PDi_2, PDi_above_2, vox_res = 2), res = 20)
-plot(v_metrics)
+voxel_metrics <- voxel_raster(las, vox_res = 2, rast_res = 20, max_z = 50)
+plot(voxel_metrics)
 ```
 

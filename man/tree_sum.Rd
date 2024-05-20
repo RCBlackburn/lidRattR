@@ -4,21 +4,15 @@
 \alias{tree_sum}
 \title{Tree-based variable summary statistics}
 \usage{
-tree_sum(las_tree)
+tree_sum(X, Y, Z, npoints, ca)
 }
 \arguments{
-\item{las}{las object from ind_tree() function}
+\item{columns}{from the lidR::crown_metrics() function (i.e., X, Y, Z, npoints, ca)}
 }
 \description{
-This function provides summarized tree-based variables  for each of the variables created using the
-ind_tree() function. Summary statistics include the mean, standard deviation, and coefficient of variation.
-}
-\examples{
-las <- readLAS(LASfile)
-las_tree <- segment_trees(las, li2012())
-las_tree <- ind_tree(las_tree)
-plot_t_metrics <- tree_sum(las_tree)
+This function provides summarized tree-based variables including the mean, standard deviation, and coefficient of variation.
+Summaries for this function are done to the entire area provided either directly or within the
+lidR::pixel_metrics() function.
 }
 \keyword{lidar}
-\keyword{metrics}
 \keyword{tree}

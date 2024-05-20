@@ -15,10 +15,9 @@ vox_mt2(vox, res, max_z)
 }
 \description{
 This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
-number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
-sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM),
-median height of the number of returns above (SVM_md_above) or within (SVM_md) SVMs
+number of returns below each sub-voxel (SVi) (PDiBelow), and the number of returns above each SVi (PDiAbove),
+sum of returns within a sub-voxels (SVsum), classifcation of a sub-voxel maximum (SVM),
+median height of the number of returns above (SVMmdAbove) or within (SVMmd) SVMs
 }
 \keyword{lidar}
-\keyword{metrics}
 \keyword{voxel}

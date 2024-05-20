@@ -212,6 +212,7 @@ vox_sum <- function(SVi_D,FRDi, FRSVi, PDi_below, PDi_above, SV_sum, SVM_md_abov
 
 
 #' Voxel point cloud summary function
+#'
 #' This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
 #' number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
 #' sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM), and
@@ -245,6 +246,7 @@ voxel_summary <- function(las, vox_res = vox_res, max_z ){
 }
 
 #' Voxel raster summary function
+#'
 #' This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
 #' number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
 #' sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM), and
@@ -269,6 +271,8 @@ voxel_summary <- function(las, vox_res = vox_res, max_z ){
 #' las <- decimate_points(las, random_per_voxel(res = 1, n = 8))
 #' metrics <- voxel_raster(las, vox_res = 2, rast_res = 10, max_z = 40)
 #' plot(metrics)
+
+
 voxel_raster <- function(las, vox_res = vox_res, rast_res =  rast_res, max_z ){
   vox <- lidR::voxel_metrics(las, func = vox_mt(Z), res = vox_res, all_voxels = TRUE)
   vox_2 <- vox_mt2(vox, res = vox_res, max_z = max_z)

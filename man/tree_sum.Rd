@@ -4,7 +4,7 @@
 \alias{tree_sum}
 \title{Tree-based variable summary statistics}
 \usage{
-tree_sum(X, Y, Z, npoints, ca)
+tree_sum(Z, npoints, ca)
 }
 \arguments{
 \item{columns}{from the lidR::crown_metrics() function (i.e., X, Y, Z, npoints, ca)}

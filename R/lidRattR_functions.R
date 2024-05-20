@@ -293,8 +293,8 @@ voxel_raster <- function(las, vox_res = vox_res, rast_res =  rast_res, max_z ){
 #' @export
 
 
-tree_sum <- function(X,Y,Z,npoints,ca){
-  data <- data.table(X, Y, Z, npoints, ca)
+tree_sum <- function(Z,npoints,ca){
+  data <- data.table(Z, npoints, ca)
   tree_metrics <- data.frame(
     ntrees = length(data$Z),
     ht_mean =  mean(data$Z, na.rm = TRUE),
@@ -338,7 +338,7 @@ tree_summary <- function(las){
   locs <- locs[-6]
   names(locs)[5] <- "ca"
   trees_las <- suppressWarnings(lidR::LAS(locs, header = las@header, crs = las@crs, index = las@index))
-  tree_sum(trees_las$X,trees_las$Y,trees_las$Z,trees_las$npoints, trees_las$ca)
+  tree_sum(trees_las$Z,trees_las$npoints, trees_las$ca)
 }
 
 #' Tree raster summary function
@@ -361,7 +361,7 @@ tree_summary <- function(las){
 #' las <- filter_poi(las, Z < 50 & Z >= 1.37 )
 #' las <- decimate_points(las, random_per_voxel(res = 1, n = 8))
 #' las_tree <- segment_trees(las, li2012())
-#' tree_metrics <- tree_raster(las_tree)
+#' tree_metrics <- tree_raster(las_tree, rast_res = 20)
 #' plot(tree_metrics)
 
 tree_raster <- function(las, rast_res){
@@ -371,6 +371,6 @@ tree_raster <- function(las, rast_res){
   names(locs)[5] <- "ca"
   trees_las <- suppressWarnings(lidR::LAS(locs, header = las@header, crs = las@crs, index = las@index))
   raster <- pixel_metrics(trees_las,
-                          func = tree_sum(X,Y,Z,npoints, ca),
+                          func = tree_sum(Z, npoints, ca),
                           res = rast_res)
 }

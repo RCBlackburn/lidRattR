@@ -22,6 +22,7 @@ A package to be used in conjuction with lidR (https://github.com/Jean-Romain/lid
 ```{r, warning = FALSE}
 library(lidR)
 library(lidRattR)
+library(data.table)
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
 las <- readLAS(LASfile)
 las <- filter_poi(las, Classification != LASNOISE)

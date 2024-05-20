@@ -23,7 +23,7 @@ las <- normalize_height(las, knnidw(k = 8, p = 2))
 las <- filter_poi(las, Z < 50 & Z >= 1.37 )
 las <- decimate_points(las, random_per_voxel(res = 1, n = 8))
 las_tree <- segment_trees(las, li2012())
-tree_metrics <- tree_raster(las_tree)
+tree_metrics <- tree_raster(las_tree, rast_res = 20)
 plot(tree_metrics)
 }
 \keyword{lidar}

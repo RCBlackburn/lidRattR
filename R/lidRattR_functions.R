@@ -86,13 +86,13 @@ vox_mt2 <- function(vox, res, max_z)
 
   colnames(point_above)[3:ncol(point_above)] <- paste0(unique(fullvox$Z))
   points_am <- point_above[seq(1, nrow(point_above), 2), ]
-  points_am <- suppressWarnings(as.data.table(lapply(points_am,  function(x) unlist(x))))
+  points_am <- suppressWarnings(data.table::as.data.table(lapply(points_am,  function(x) unlist(x))))
   points_am[is.na(points_am)] <- 0
   points_am <- melt(points_am, id.vars = c("X","Y"), variable.name = "Z", value.name = "pa_med")
   points_am$id_xyz = paste0(points_am$X,"-",points_am$Y,"-",points_am$Z)
 
   points_ab <- point_above[seq(2, nrow(point_above), 2), ]
-  points_ab <- suppressWarnings(as.data.table(lapply(points_ab,  function(x) unlist(x))))
+  points_ab <- suppressWarnings(data.table::as.data.table(lapply(points_ab,  function(x) unlist(x))))
   points_ab <- melt(points_ab, id.vars = c("X","Y"), variable.name = "Z", value.name = "npoints_above")
   points_ab$id_xyz = paste0(points_ab$X,"-",points_ab$Y,"-",points_ab$Z)
 

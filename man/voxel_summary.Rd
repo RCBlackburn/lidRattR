@@ -2,13 +2,7 @@
 % Please edit documentation in R/lidRattR_functions.R
 \name{voxel_summary}
 \alias{voxel_summary}
-\title{Voxel point cloud summary function
-This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
-number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
-sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM), and
-median height of the number of returns above (SVM_md_above) or within (SVM_md) SVMs. These variables are summarized
-for the entir point cloud including the mean, median, variance, standard deviation, coefficient of variation,
-IQR, skewness, and kurtosis}
+\title{Voxel point cloud summary function}
 \usage{
 voxel_summary(las, vox_res = vox_res, max_z)
 }
@@ -21,7 +15,6 @@ voxel_summary(las, vox_res = vox_res, max_z)
 (or chunk for catalog processing) will be used.}
 }
 \description{
-Voxel point cloud summary function
 This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
 number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
 sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM), and

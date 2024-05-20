@@ -2,13 +2,7 @@
 % Please edit documentation in R/lidRattR_functions.R
 \name{voxel_raster}
 \alias{voxel_raster}
-\title{Voxel raster summary function
-This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
-number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
-sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM), and
-median height of the number of returns above (SVM_md_above) or within (SVM_md) SVMs. These variables are summarized
-within each pixel including the mean, median, variance, standard deviation, coefficient of variation,
-IQR, skewness, and kurtosis}
+\title{Voxel raster summary function}
 \usage{
 voxel_raster(las, vox_res = vox_res, rast_res = rast_res, max_z)
 }
@@ -23,7 +17,6 @@ voxel_raster(las, vox_res = vox_res, rast_res = rast_res, max_z)
 (or chunk for catalog processing) will be used.}
 }
 \description{
-Voxel raster summary function
 This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
 number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
 sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM), and

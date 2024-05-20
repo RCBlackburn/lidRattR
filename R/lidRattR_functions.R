@@ -1,6 +1,6 @@
 #' Individual voxel-based SVi function
 #'
-#' This function takes the height values (Z) for each lidar point point cloud and
+#' @description This function takes the height values (Z) for each lidar point point cloud and
 #' is used within lidR::voxel_metrics() to calculate the sub-voxel i (SVi) density (SVi_d) and a list of Z values for for each sub-voxel.
 #' @param z height
 #' @keywords lidar voxel metrics
@@ -20,7 +20,7 @@ vox_mt <- function(z)
 
 #' Individual voxel-based variable function
 #'
-#' This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
+#' @description This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
 #' number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
 #' sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM),
 #' median height of the number of returns above (SVM_md_above) or within (SVM_md) SVMs
@@ -30,9 +30,7 @@ vox_mt <- function(z)
 #' @keywords lidar voxel metrics
 #' @import data.table
 #' @export
-#' @examples
-#'
-#'
+
 vox_mt2 <- function(vox, res, max_z)
 {
   fullvox <- data.table(vox,
@@ -148,13 +146,12 @@ vox_mt2 <- function(vox, res, max_z)
 
 #' Voxel-based variable summary statistics
 #'
-#' This function provides summarized voxel-based variables including the mean, median, variance, standard deviation, coefficient of variation,
+#' @description This function provides summarized voxel-based variables including the mean, median, variance, standard deviation, coefficient of variation,
 #' IQR, skewness, and kurtosis. Summaries for this function are done to the entire area provided either directly or within the
 #' lidR::pixel_metrics() function.
 #' @keywords lidar voxel metrics
 #' @import data.table
 #' @export
-#' @examples
 
 vox_sum <- function(SVi_D,FRDi, FRSVi, PDi_below, PDi_above, SV_sum, SVM_md_above, SVM_md, SVM, vox_res){
   las_vox <- data.table(SVi_D,FRDi, FRSVi, PDi_below, PDi_above, SV_sum, SVM_md_above, SVM_md, SVM)
@@ -213,7 +210,7 @@ vox_sum <- function(SVi_D,FRDi, FRSVi, PDi_below, PDi_above, SV_sum, SVM_md_abov
 
 #' Voxel point cloud summary function
 #'
-#' This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
+#' @description This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
 #' number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
 #' sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM), and
 #' median height of the number of returns above (SVM_md_above) or within (SVM_md) SVMs. These variables are summarized
@@ -247,7 +244,7 @@ voxel_summary <- function(las, vox_res = vox_res, max_z ){
 
 #' Voxel raster summary function
 #'
-#' This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
+#' @description This function provides individual voxel-based variables including the frequency ratio (FRDi),frequency ratio (FRSVi),
 #' number of returns below each sub-voxel (SVi) (PDi_below), and the number of returns above each SVi (PDi_above),
 #' sum of returns within a sub-voxels (SV_sum), classifcation of a sub-voxel maximum (SVM), and
 #' median height of the number of returns above (SVM_md_above) or within (SVM_md) SVMs. These variables are summarized
@@ -285,7 +282,7 @@ voxel_raster <- function(las, vox_res = vox_res, rast_res =  rast_res, max_z ){
 
 #' Tree variables to point cloud
 #'
-#' This function creates a point cloud with tree merics that can be summarized
+#' @description This function creates a point cloud with tree merics that can be summarized
 #' @param las las object
 #' @keywords lidar tree metrics
 #' @import data.table
@@ -309,7 +306,7 @@ ind_tree <- function(las){
 
 #' Tree-based variable summary statistics
 #'
-#' This function provides summarized tree-based variables  for each of the variables created using the
+#' @description This function provides summarized tree-based variables  for each of the variables created using the
 #' ind_tree() function. Summary statistics include the mean, standard deviation, and coefficient of variation.
 #' @param las las object from ind_tree() function
 #' @keywords lidar tree metrics
@@ -338,11 +335,11 @@ tree_sum <- function(las_tree){
 
 #' Tree-based variable summary statistics for lidR::pixel_metrics() function
 #'
-#' This function provides summarized tree-based variables just as the tree_sum() function.
+#' @description This function provides summarized tree-based variables just as the tree_sum() function.
 #' This can be used in conjunction is lidR::pixel_metrics() to make raster layers of tree-based summary statistics.
-#' @param Z
-#' @param npoints
-#' @param ca
+#' @param Z height
+#' @param npoints number of points
+#' @param ca crown area
 #' @keywords lidar tree metrics
 #' @export
 #' @examples

@@ -6,6 +6,13 @@
 \usage{
 tree_sum_raster(Z, npoints, ca)
 }
+\arguments{
+\item{Z}{height}
+
+\item{npoints}{number of points}
+
+\item{ca}{crown area}
+}
 \description{
 This function provides summarized tree-based variables just as the tree_sum() function.
 This can be used in conjunction is lidR::pixel_metrics() to make raster layers of tree-based summary statistics.

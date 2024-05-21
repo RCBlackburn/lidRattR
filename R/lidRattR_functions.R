@@ -315,7 +315,7 @@ tree_sum <- function(Z,npoints,ca){
 #' height of trees (ht), number of points per tree (npts), and crown area (ca). These variables are summarized
 #' for the entire point cloud including the mean, median, variance, standard deviation, coefficient of variation,
 #' IQR, skewness, and kurtosis
-#' @param las las object
+#' @param las las object with tree ID column
 #' @keywords lidar tree
 #' @import data.table
 #' @import tidyr
@@ -347,7 +347,8 @@ tree_summary <- function(las){
 #' height of trees (ht), number of points per tree (npts), and crown area (ca). These variables are summarized
 #' within each pixel including the mean, median, variance, standard deviation, coefficient of variation,
 #' IQR, skewness, and kurtosis
-#' @param las las object
+#' @param las las object with tree ID column
+#' @param rast_res desired spatial resolution of raster
 #' @keywords lidar tree metrics
 #' @import data.table
 #' @import tidyr

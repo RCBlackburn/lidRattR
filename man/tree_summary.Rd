@@ -7,7 +7,7 @@
 tree_summary(las)
 }
 \arguments{
-\item{las}{las object}
+\item{las}{las object with tree ID column}
 }
 \description{
 This function provides individual tree-based variables including number of trees (ntrees),

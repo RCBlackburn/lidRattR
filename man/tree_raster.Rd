@@ -7,7 +7,9 @@
 tree_raster(las, rast_res)
 }
 \arguments{
-\item{las}{las object}
+\item{las}{las object with tree ID column}
+
+\item{rast_res}{desired spatial resolution of raster}
 }
 \description{
 This function provides individual tree-based variables including number of trees (ntrees),

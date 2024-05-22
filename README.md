@@ -20,6 +20,27 @@ are some examples:
 library(lidR)
 library(lidRattR)
 library(data.table)
+library(terra)
+```
+
+    ## terra 1.7.71
+
+    ## 
+    ## Attaching package: 'terra'
+
+    ## The following object is masked from 'package:data.table':
+    ## 
+    ##     shift
+
+    ## The following objects are masked from 'package:lidR':
+    ## 
+    ##     area, crs, crs<-, is.empty
+
+    ## The following object is masked from 'package:knitr':
+    ## 
+    ##     spin
+
+``` r
 LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
 las <- readLAS(LASfile)
 las <- filter_poi(las, Classification != LASNOISE)
@@ -106,3 +127,70 @@ plot(voxel_metrics)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+## Catalog processing
+
+Tree and voxel summaries can also be implemented using lidR’s catalog
+processing engine:
+
+``` r
+## read in lidar catalog
+LASfile <- system.file("extdata", "Megaplot.laz", package="lidR")
+ctg = readLAScatalog(LASfile)
+
+## set catlog options 
+opt_chunk_buffer(ctg) <- 10 
+opt_chunk_size(ctg) <- 100    
+```
+
+    ## Be careful, a chunk size smaller than 250 is likely to be irrelevant.
+
+``` r
+opt_select(ctg) <- "xyzicr"      
+opt_wall_to_wall(ctg) <- TRUE
+opt_chunk_alignment(ctg) <- c(0,0)
+opt_progress(ctg) <- FALSE
+opt_stop_early(ctg) <- TRUE
+
+## check chunks and overlap
+plot(ctg, chunk = TRUE)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+``` r
+## define custom function for catalog processing 
+all_layers_catalog = function(cluster)
+{ 
+  las = readLAS(cluster)
+  las = las_update(las) 
+  if (lidR::is.empty(las)) return(NULL) 
+  las = filter_poi(las, Classification != LASNOISE)
+  if (lidR::is.empty(las)) return(NULL)
+  las = normalize_height(las, knnidw(k = 8, p = 2)) 
+  las = filter_poi(las, Z < 49 & Z >= 1.37 ) 
+  if (lidR::is.empty(las)) return(NULL)
+  las <- decimate_points(las, random_per_voxel(res = 1, n = 8))
+  if (lidR::is.empty(las)) return(NULL)
+  
+  vmetrics <-voxel_raster(las,vox_res = 2, rast_res = 20, max_z = 40)
+  las <- segment_trees(las, li2012())
+  tmetrics <-tree_raster(las, rast_res = 20)
+  vmetrics <- resample(vmetrics,tmetrics)
+  metrics <- c(tmetrics,vmetrics)
+  tile0_ext = lidR::ext(las)
+  vmetrics <- crop(metrics, tile0_ext)
+  
+  return(wrap(vmetrics))
+}
+
+
+layer_list <- catalog_apply(ctg, all_layers_catalog)
+
+raster <- lapply(layer_list, terra::unwrap)
+raster <- do.call(terra::merge, raster)
+
+plot(raster)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->

@@ -318,7 +318,6 @@ tree_sum <- function(Z,npoints,ca){
 #' @param las las object with tree ID column
 #' @keywords lidar tree
 #' @import data.table
-#' @import tidyr
 #' @import lidR
 #' @export
 #' @examples
@@ -351,7 +350,6 @@ tree_summary <- function(las){
 #' @param rast_res desired spatial resolution of raster
 #' @keywords lidar tree metrics
 #' @import data.table
-#' @import tidyr
 #' @import lidR
 #' @export
 #' @examples

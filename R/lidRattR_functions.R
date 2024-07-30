@@ -198,7 +198,7 @@ vox_sum <- function(SViD,FRDi, FRSVi, PDiBelow, PDiAbove, SVsum, SVMmdAbove, SVM
   kurt <- apply(las_vox, 2, function(x) {length(x)*sum((x- mean(x, na.rm = T))^4, na.rm = T)/
       (sum((x - mean(x, na.rm = T))^2, na.rm = T)^2)})
   names(kurt)<- paste0(names(kurt), "_", vox_res, "_", "kurt")
-  pct_fill_vox <- data.frame(pct_fill_vox = as.numeric(sum(las_vox[,1] > 0 ))/ length(las_vox[,1]))
+  pct_fill_vox <- data.frame(pct_fill_vox = as.numeric(sum(las_vox[,1] > 0 ))/ nrow(las_vox[,1]))
   names(pct_fill_vox) <- paste0(names(pct_fill_vox), "_", vox_res)
   data <- data.frame(c(means, meds, var, sd, cv, IQR, skew, kurt, pct_fill_vox,data_svm))
 

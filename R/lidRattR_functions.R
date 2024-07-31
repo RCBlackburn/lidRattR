@@ -36,7 +36,7 @@ vox_mt2 <- function(vox, res, max_z)
   fullvox <- data.table(vox,
                         id_xy = paste0(vox$X,"-", vox$Y),
                         id_xyz = paste0(vox$X,"-", vox$Y,"-",vox$Z))
-  if(is.numeric(max_z)){
+  if(is.numeric(max_z) & max_z != max(fullvox$Z)){
 
   z_need <- seq(max(fullvox$Z), max_z, res)[-1]
   new_z <- lapply(z_need, function(x){paste0(unique(fullvox$id_xy),"-", x)})
